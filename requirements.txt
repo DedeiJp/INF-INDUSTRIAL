@@ -1,0 +1,17 @@
+certifi==2025.1.31
+charset-normalizer==3.4.1
+docutils==0.21.2
+filetype==1.2.0
+idna==3.10
+Kivy==2.3.1
+kivy-deps.angle==0.4.0
+kivy-deps.glew==0.3.1
+Kivy-Garden==0.1.5
+kivy_deps.sdl2==0.8.0
+Pygments==2.19.1
+pymodbus==3.8.6
+pyModbusTCP==0.1.8
+pypiwin32==223
+pywin32==308
+requests==2.32.3
+urllib3==2.3.0
