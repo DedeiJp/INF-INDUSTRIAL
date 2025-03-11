@@ -1,20 +1,163 @@
 #:kivy 1.11.1
 <MyWidget>:
-    orientation: 'horizontal'
-    Button:
-        id: btn
-        text: 'Incrementar'
-        background_color: [1,0,0,1]
-        on_press: root.changelb()
-    Label:
-        id: lb
-        text: '0'
+    orientation: 'vertical'
+    canvas:
+        Color:
+            rgb: 0.647, 0.612, 0.58
+            s: 0.3
+        Rectangle:
+            size: self.size
     BoxLayout:
-        id: bxa
-        Button:
-            id: bt_limpar
-            text: 'Limpar'
-            on_press:  lb.text = '0'
-        Label:
-            id:lb_2
-            text: 'Label2'
+        orientation: 'horizontal'
+        size_hint: (1, 0.1)
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.3, 1)
+            Label:
+                text: "Status da Conexão"
+            Button:
+                id: client_status_mainwidget
+                text: "Cliente Desconectado"
+                disabled: True
+                background_color: (1,0,0,1)
+                color: (1,0,0,1)
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.3, 1)
+            Label:
+                text: "ENE118 - INFORMÁTICA INDUSTRIAL"
+            Label:
+                text: "Software Supervisório - Esteira"
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.3, 1)
+            Button:
+                text: "Configuração de Ip e Porta Para Conexão"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                text: "Configuração do Tempo de Escaneamento"
+                background_color:(0.647, 0.612, 0.58, 1)
+
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: 0.647, 0.612, 0.58
+            Rectangle:
+                size: self.size
+        
+        GridLayout:
+            size_hint: (0.3, 0.3)
+            pos_hint: {"x": 0.01, "y":0.68}
+            cols: 2
+            Button:
+                id: bt_tensao
+                disabled: False
+                text: "Tensão"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_corrente
+                disabled: False
+                text: "Corrente"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_temperatura
+                disabled: False
+                text: "Temperatura"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_potencia
+                disabled: False
+                text: "Potencia"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_comandos
+                disabled: False
+                text: "Comandos"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_pid
+                disabled: False
+                text: "PID"
+                background_color:(0.647, 0.612, 0.58, 1)
+        
+        BoxLayout:
+            size_hint: (0.25, 0.08)
+            pos_hint: {"x": 0.035, "y":0.575}
+            canvas:
+                Color:
+                    rgb: 0.647, 0.612, 0.58
+                    s: 0.3
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                color: (1,1,1,1)
+                text: "Status Motor"
+            Button:
+                id: bt_motor_status
+                disabled: True
+                background_color: (1,0,0,1)
+                color: (1,0,0,1)
+                text: "OFF"
+            
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.25, 0.24)
+            pos_hint: {"x": 0.035, "y":0.320}
+
+            BoxLayout:
+                orientation: 'vertical'
+                canvas:
+                    Color:
+                        rgb: 0.647, 0.612, 0.58
+                        s: 0.3
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Label:
+                    text: "Torque"
+                Label:
+                    text: "Rotações"
+                Label:
+                    text: "Vel. Esteira"
+
+            BoxLayout:
+                orientation: 'vertical'
+                canvas:
+                    Color:
+                        rgb: 0.647, 0.612, 0.58
+                        s: 0.8
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Label:
+                    id: med_torque
+                    text: "AGUARDANDO"
+                Label:
+                    id: med_rpm
+                    text: "AGUARDANDO"
+                Label:
+                    id: med_velocidade
+                    text: "AGUARDANDO"
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.3, 0.25)
+            pos_hint: {"x": 0.01, "y":0.05}
+            Button:
+                text: "Grafico - Velocidade"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                text: "Grafico - Potencia"
+                background_color:(0.647, 0.612, 0.58, 1) 
+            Button:
+                text: "Dados Historicos"
+                background_color:(0.647, 0.612, 0.58, 1)            
+        
+        BoxLayout:
+            size_hint: (1, 0.7)
+            pos_hint: {"x": 0.15, "y":0.15}
+            Image:
+                id: img_modelo
+                source:'img/model/GREEN-OFF.png'
+                size: self.size
