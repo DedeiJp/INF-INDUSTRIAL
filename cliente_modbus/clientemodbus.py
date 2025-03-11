@@ -6,6 +6,16 @@ from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.client.mixin import ModbusClientMixin
 from pymodbus.constants import Endian
 from time import sleep
+from enum import IntEnum
+
+class TipoEndereco(IntEnum):
+    """
+    Classe de Enum representando os tipos de endereço de uma tabela MODBus
+    """
+    HOLDING_REGISTER = 1
+    COIL = 2
+    INPUT_REGISTER = 3
+    DISCRETE_INPUT = 4
 
 class ClienteMODBUS():
     """
@@ -75,42 +85,74 @@ class ClienteMODBUS():
 
         return tipo_valor
 
-    def lerDado(self, tipo_endereco, addr, tipo_dado=int, multiplicador:int=1):
+    def lerDado(self, tipo_endereco: TipoEndereco | int, addr, tipo_dado=int, multiplicador:int=1):
         """
-        Método para leitura de um dado da Tabela MODBUS
+        Método para leitura de um dado da Tabela MODBUS.
+        Suporta leitura de floats de 32 bits
         """
         is_int = tipo_dado is int
         is_float = tipo_dado is float
 
-        if tipo_endereco == 1:
-            resp = self._cliente.read_holding_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
+        match tipo_endereco:
+            case TipoEndereco.HOLDING_REGISTER:
+                resp = self._cliente.read_holding_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
             
-            if is_float:
-                return self._cliente.convert_from_registers(\
-                    registers=resp.registers,\
-                    data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
-                    word_order='little'\
-                )[0]/multiplicador
-            else:
-                return resp.registers[0]/multiplicador
+                if is_float:
+                    return self._cliente.convert_from_registers(\
+                        registers=resp.registers,\
+                        data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
+                        word_order='little'\
+                    )[0]/multiplicador
+                else:
+                    return resp.registers[0]/multiplicador
+                
+            case TipoEndereco.COIL:
+                return self._cliente.read_coils(addr,1)[0]
 
-        if tipo_endereco == 2:
-            return self._cliente.read_coils(addr,1)[0]
-
-        if tipo_endereco == 3:
-            resp = self._cliente.read_input_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
+            case TipoEndereco.INPUT_REGISTER:
+                resp = self._cliente.read_input_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
             
-            if is_float:
-                return self._cliente.convert_from_registers(\
-                    registers=resp.registers,\
-                    data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
-                    word_order='little'\
-                )[0]/multiplicador
-            else:
-                return resp.registers[0]/multiplicador
+                if is_float:
+                    return self._cliente.convert_from_registers(\
+                        registers=resp.registers,\
+                        data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
+                        word_order='little'\
+                    )[0]/multiplicador
+                else:
+                    return resp.registers[0]/multiplicador
+                
+            case TipoEndereco.DISCRETE_INPUT:
+                return self._cliente.read_discrete_inputs(addr,1)[0]
 
-        if tipo_endereco == 4:
-            return self._cliente.read_discrete_inputs(addr,1)[0]
+        # if tipo_endereco == TipoEndereco.HOLDING_REGISTER:
+        #     resp = self._cliente.read_holding_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
+            
+        #     if is_float:
+        #         return self._cliente.convert_from_registers(\
+        #             registers=resp.registers,\
+        #             data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
+        #             word_order='little'\
+        #         )[0]/multiplicador
+        #     else:
+        #         return resp.registers[0]/multiplicador
+
+        # if tipo_endereco == TipoEndereco.COIL:
+        #     return self._cliente.read_coils(addr,1)[0]
+
+        # if tipo_endereco == TipoEndereco.INPUT_REGISTER:
+        #     resp = self._cliente.read_input_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
+            
+        #     if is_float:
+        #         return self._cliente.convert_from_registers(\
+        #             registers=resp.registers,\
+        #             data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
+        #             word_order='little'\
+        #         )[0]/multiplicador
+        #     else:
+        #         return resp.registers[0]/multiplicador
+
+        # if tipo_endereco == TipoEndereco.DISCRETE_INPUT:
+        #     return self._cliente.read_discrete_inputs(addr,1)[0]
 
     def escreveDado(self, tipo_addr, addr, valor:str):
         """
