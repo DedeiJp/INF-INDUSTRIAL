@@ -2,10 +2,16 @@ import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.config import Config
+from interface.interface_popup import IpConfigModbus
 
 class MyWidget(BoxLayout):
-    def changelb(self):
+    
+    def __init__(self, **kwargs):
         """
-        Método simples para incremento do valor mostrado no label
+        Construtor da interface pricipal
         """
-        self.ids['lb'].text = str(int(self.ids.lb.text) + 1) 
+        super().__init__()
+
+
+        #Popups
+        self._ipConfig = IpConfigModbus()

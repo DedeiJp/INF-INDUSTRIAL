@@ -23,6 +23,6 @@ class App_main(App):
 if __name__ == '__main__':
     # Window.fullscreen = True
     Window.size = (1280, 720)
-    Builder.load_string(open("interface/interface_principal.kv", encoding = "utf-8").read())
-    # Builder.load_string(open("interface_secudarias.kv", encoding = "utf-8").read(), rulesonly = True)
+    Builder.load_string(open("interface/interface_principal.kv", encoding = "utf-8").read(),)
+    Builder.load_string(open("interface/interface_popup.kv", encoding = "utf-8").read(), rulesonly = True)
     App_main().run()
