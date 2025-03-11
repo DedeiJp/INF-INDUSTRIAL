@@ -163,15 +163,10 @@ class ClienteMODBUS():
 
         if tipo_addr == 1:
             if tipo_valor is int:
-                return self._cliente.write_register(addr,tipo_valor(valor))
+                return self._cliente.write_register(addr, tipo_valor(valor))
             elif tipo_valor is float:
-                binaryBuilder = BinaryPayloadBuilder(byteorder=Endian.BIG)
-                binaryBuilder.add_32bit_float(float(valor))
-                payload = binaryBuilder.to_registers()
-                
-                decodedFloat32 = ModbusClientMixin.convert_from_registers(payload, data_type=ModbusClientMixin.DATATYPE.FLOAT32, word_order='big')
-                print(f"Valor float escrito:\r\n {decodedFloat32}")
-
-                return self._cliente.write_registers(addr, payload)
+                regs = self._cliente.convert_to_registers(tipo_valor(valor), ModbusClientMixin.DATATYPE.FLOAT32, "little")
+                return self._cliente.write_registers(addr, regs)
+            
         if tipo_addr == 2:
-            return self._cliente.write_coil(addr,valor) if tipo_valor is int else None
+            return self._cliente.write_coil(addr, valor) if tipo_valor is int else None
