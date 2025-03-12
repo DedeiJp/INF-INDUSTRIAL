@@ -33,7 +33,7 @@
                 height: 10
                 id: bt_modbusconfig_md_scantime
                 text: "Definir Scan Time"
-                on_release:
+                on_release: app.root.set_modbus_scan_time(int(input_scantime.text))
         BoxLayout:
             size_hint:(1, 0.35)
             orientation: 'horizontal'
@@ -41,12 +41,12 @@
                 height: 10
                 id: bt_modbusconfig_md_conectar
                 text: "Conectar"
-                on_release:
+                on_release: app.root.create_modbus_connection(str(input_ip.text), int(input_porta.text))
             Button:
                 height: 10
                 id: bt_modbusconfig_md_desconectar
                 text: "Desconectar"
-                on_release:
+                on_release: app.root.close_modbus_connection()
             Button:
                 height: 10
                 id: bt_modbusconfig_md_cancelar
