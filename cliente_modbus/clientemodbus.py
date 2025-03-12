@@ -21,12 +21,28 @@ class ClienteMODBUS():
     """
     Classe Cliente MODBUS
     """
-    def __init__(self, server_ip,porta,scan_time=1):
+    def __init__(self, server_ip, porta, scan_time = 1):
         """
         Construtor
         """
         self._cliente = ModbusTcpClient(host=server_ip,port = porta)
         self._scan_time = scan_time
+
+    def close(self):
+        """
+        Fecha a conexão socket com o servidor
+        """
+        self._cliente.close()
+
+    def connect(self):
+        """
+        Cria conexão caso ela esteja fechada ou não exista
+        """
+        if not self.is_connected():
+            self._cliente.connect()
+
+    def is_connected(self) -> bool:
+        return self._cliente.connected
 
     def atendimento(self):
         """
