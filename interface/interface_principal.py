@@ -50,11 +50,11 @@ class MyWidget(BoxLayout):
             "temp_carc": { "addr": 706, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
             "carga_est": { "addr": 710, "float": True, "multiplicador": 1, "valor": None, "unidade": "Kgf/cm²", "widget": self},
             "vel_est": { "addr": 724, "float": True, "multiplicador": 1, "valor": None, "unidade": "m/min", "widget": self},
-            "curr_r": { "addr": 840, "float": False, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
-            "curr_s": { "addr": 841, "float": False, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
-            "curr_t": { "addr": 842, "float": False, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
-            "curr_N": { "addr": 843, "float": False, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
-            "curr_med": { "addr": 845, "float": False, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
+            "curr_r": { "addr": 840, "float": True, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
+            "curr_s": { "addr": 841, "float": True, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
+            "curr_t": { "addr": 842, "float": True, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
+            "curr_N": { "addr": 843, "float": True, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
+            "curr_med": { "addr": 845, "float": True, "multiplicador": 100, "valor": None, "unidade": "A", "widget": self._correnteModal},
             "tens_rs": { "addr": 847, "float": False, "multiplicador": 10, "valor": None, "unidade": "V", "widget": self._tensaoModal},
             "tens_st": { "addr": 848, "float": False, "multiplicador": 10, "valor": None, "unidade": "V", "widget": self._tensaoModal},
             "tens_tr": { "addr": 849, "float": False, "multiplicador": 10, "valor": None, "unidade": "V", "widget": self._tensaoModal},
@@ -195,7 +195,39 @@ class MyWidget(BoxLayout):
                 if is_ctrl_var:
                     continue
 
-                info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
+                match nome_dado:
+                    case "status_mot":
+                        bit_0 = info_dado["valor"] & 1
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
+                        continue
+                    case "tipo_motor":
+                        tipo_motor = "VERDE" if info_dado["valor"] == 1 else "AZUL" if info_dado["valor"] == 2 else None
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
+                        continue
+                    case "driver_partida":
+                        driver_partida = "DIRETA" if info_dado["valor"] == 0 else "SOFT-START" if info_dado["valor"] == 1 else "INVERSOR" if info_dado["valor"] == 2 else None
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
+                        continue
+                    case _:
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
+                # if nome_dado == "status_mot":
+                #     bit_0 = info_dado["valor"] & 1
+                #     # TODO: Implementar lógica
+                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
+                #     continue
+
+                # if nome_dado == "tipo_motor":
+                #     tipo_motor = "VERDE" if info_dado["valor"] == 1 else "AZUL" if info_dado["valor"] == 2 else None
+                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
+                #     continue
+
+                # if nome_dado == "driver_partida":
+                #     driver_partida = "DIRETA" if info_dado["valor"] == 0 else "SOFT-START" if info_dado["valor"] == 1 else "INVERSOR" if info_dado["valor"] == 2 else None
+                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
+                #     continue
+                
+
+                # info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
                 
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
