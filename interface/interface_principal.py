@@ -4,7 +4,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
 from interface.interface_popup import IpConfigModbus
-from cliente_modbus import ClienteMODBUS, TipoEndereco as addr
+from os import path
+import sys
+
+sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+from cliente_modbus.clientemodbus import ClienteMODBUS, TipoEndereco as addr
 
 class MyWidget(BoxLayout):
     _ipConfigModal: Popup

@@ -1,1 +1,1 @@
-from clientemodbus import ClienteMODBUS, TipoEndereco
+from .clientemodbus import ClienteMODBUS, TipoEndereco
