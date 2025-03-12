@@ -2,7 +2,7 @@ import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.config import Config
-from interface.interface_popup import IpConfigModbus
+from interface.interface_popup import ModbusConfig
 
 class MyWidget(BoxLayout):
     
@@ -14,4 +14,4 @@ class MyWidget(BoxLayout):
 
 
         #Popups
-        self._ipConfig = IpConfigModbus()
+        self._ipConfig = ModbusConfig()

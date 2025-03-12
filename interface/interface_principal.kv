@@ -1,4 +1,5 @@
 #:kivy 1.11.1
+
 <MyWidget>:
     orientation: 'vertical'
     canvas:
@@ -25,20 +26,16 @@
             orientation: 'vertical'
             size_hint: (0.3, 1)
             Label:
-                text: "ENE118 - INFORMÁTICA INDUSTRIAL"
+                text: "ENE118 - INFORMATICA INDUSTRIAL"
             Label:
                 text: "Software Supervisório - Esteira"
         BoxLayout:
             orientation: 'vertical'
             size_hint: (0.3, 1)
             Button:
-                text: "Configuração de Ip e Porta Para Conexão"
+                text: "Configurações MODBUS - Porta, Ip e Scantime"
                 on_release: root._ipConfig.open()
                 background_color:(0.647, 0.612, 0.58, 1)
-            Button:
-                text: "Configuração do Tempo de Escaneamento"
-                background_color:(0.647, 0.612, 0.58, 1)
-
     FloatLayout:
         canvas:
             Color:
