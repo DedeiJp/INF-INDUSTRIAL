@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from interface.interface_popup import ModbusConfig
+from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente
 from os import path
 import sys
 
@@ -19,21 +19,21 @@ class MyWidget(BoxLayout):
         'scan_time': 1
     }
     __modbusDataTable: dict[dict[str, str|int]] = {
-        "tipo_motor": { "addr": 708, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1},
+        "tipo_motor": { "addr": 708, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1}, # On Hold
         "temp_r": { "addr": 700, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 10},
         "temp_s": { "addr": 702, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 10},
         "temp_t": { "addr": 704, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 10},
         "temp_carc": { "addr": 706, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 10},
         "carga_est": { "addr": 710, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1},
-        "vel_est": { "addr": 724, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1},
-        "curr_r": { "addr": 840, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100},
-        "curr_s": { "addr": 841, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100},
-        "curr_t": { "addr": 842, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100},
-        "curr_N": { "addr": 843, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100},
-        "curr_med": { "addr": 845, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100},
-        "tens_rs": { "addr": 847, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10},
-        "tens_st": { "addr": 848, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10},
-        "tens_tr": { "addr": 849, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10},
+        "vel_est": { "addr": 724, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1}, # Interfaced
+        "curr_r": { "addr": 840, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100}, # Interfaced
+        "curr_s": { "addr": 841, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100}, # Interfaced
+        "curr_t": { "addr": 842, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100}, # Interfaced
+        "curr_N": { "addr": 843, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100}, # Interfaced
+        "curr_med": { "addr": 845, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 100}, # Interfaced
+        "tens_rs": { "addr": 847, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10}, # Interfaced
+        "tens_st": { "addr": 848, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10}, # Interfaced
+        "tens_tr": { "addr": 849, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10}, # Interfaced
         "pot_ativ_r": { "addr": 852, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "pot_ativ_s": { "addr": 853, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "pot_ativ_t": { "addr": 854, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
@@ -46,7 +46,7 @@ class MyWidget(BoxLayout):
         "pot_apar_s": { "addr": 861, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "pot_apar_t": { "addr": 862, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "pot_apar_total": { "addr": 863, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
-        "rot_motor": { "addr": 884, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1},
+        "rot_motor": { "addr": 884, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 1}, # Interfaced
         "driver_partida": { "addr": 1216, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "ctrl_partida_inv": { "addr": 1312, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "freq_partida_inv": { "addr": 1313, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 10},
@@ -62,7 +62,7 @@ class MyWidget(BoxLayout):
         "energ_reativ": { "addr": 1212, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "energ_apar": { "addr": 1214, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1},
         "status_mot": { "addr": 1330, "tipo_addr": addr.HOLDING_REGISTER, "float": False, "multiplicador": 1, "bit": 0},
-        "torque_mot": { "addr": 1420, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 100}
+        "torque_mot": { "addr": 1420, "tipo_addr": addr.HOLDING_REGISTER, "float": True, "multiplicador": 100} # Interfaced
     }
     
     def __init__(self, **kwargs):
@@ -73,6 +73,8 @@ class MyWidget(BoxLayout):
 
         # Popups
         self._ipConfigModal = ModbusConfig()
+        self._tensaoModal = ModalTensao()
+        self._correnteModal = ModalCorrente()
     
     def __setModbusConnParams(self, host: str, port: int, scan_time: int = 1):
         """
