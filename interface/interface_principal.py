@@ -91,7 +91,6 @@ class MyWidget(BoxLayout):
 
     def shutdown(self):
         self._shutdown_initiated = True
-        sleep(self._modbusConnParams["scan_time"] / 1000)
         if self._modbusClient:
             self.close_modbus_connection()
         self.clear_widgets()
@@ -165,9 +164,9 @@ class MyWidget(BoxLayout):
                     self._update_ui()
                     sleep(self._modbusConnParams["scan_time"])
             except Exception as e:
-                self.close_modbus_connection()
-                print("Erro ao atualizar dados e interface: ", e.args)
-                e.with_traceback()
+                if not self._shutdown_initiated:
+                    self.close_modbus_connection()
+                    print("Erro ao atualizar dados e interface: ", e.args)
 
     def _update_data(self):
         """
