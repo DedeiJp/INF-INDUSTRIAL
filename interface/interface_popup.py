@@ -11,7 +11,7 @@ class ModbusConfig(Popup):
 
     def __init__(self, **kwargs):
         """"
-        Construtor da classe ModbusPopup
+        Construtor da classe ModbusConfig
         """
         super().__init__(**kwargs)
     
@@ -19,4 +19,26 @@ class ModbusConfig(Popup):
         if self.lb_informacao is not None:
             self.ids.md_modbus_config.remove_widget(self.lb_informacao)
 
+class ModalTensao(Popup):
+    """""
+    Popup da configuração de IP e Porta no MODBUS
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalTensao
+        """
+        super().__init__(**kwargs)
+    
+
+class ModalCorrente(Popup):
+    """""
+    Popup da configuração de IP e Porta no MODBUS
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalCorrente
+        """
+        super().__init__(**kwargs)
 

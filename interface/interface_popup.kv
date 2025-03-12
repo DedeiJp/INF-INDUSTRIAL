@@ -54,3 +54,83 @@
                 on_release:
                     root.limpar_dados()
                     root.dismiss()
+
+<ModalTensao>:
+    title: "Tensão Entre os Rolamentos"
+    size_hint_x: 0.2
+    size_hint_y: None
+    height: 400
+    BoxLayout:
+        id: md_tensao_config
+        orientation: 'vertical'
+        GridLayout:
+            cols: 2
+            rows: 3
+            Label:
+                text: "Tensão RS:"
+            Label:
+                id: lb_tens_rs
+                text: "N/a [V]"
+            Label:
+                text: "Tensão ST:"
+            Label:
+                id: lb_tens_st
+                text: "N/a [V]"
+            Label:
+                text: "Tensão TR:"
+            Label:
+                id: lb_tens_tr
+                text: "N/a [V]"
+        BoxLayout:
+            size_hint_y: 0.2
+            Button:
+                height: 10
+                id: bt_tensao_md_cancelar
+                text: "Fechar"
+                on_release:
+                    root.dismiss()
+
+<ModalCorrente>:
+    title: "Correntes do Motor"
+    size_hint_x: 0.2
+    size_hint_y: None
+    height: 600
+    BoxLayout:
+        id: md_corrente_config
+        orientation: 'vertical'
+        GridLayout:
+            cols: 2
+            rows: 5
+            Label:
+                text: "Corrente R:"
+            Label:
+                id: lb_curr_r
+                text: "N/a [A]"
+            Label:
+                text: "Corrente S:"
+            Label:
+                id: lb_curr_s
+                text: "N/a [A]"
+            Label:
+                text: "Corrente T:"
+            Label:
+                id: lb_curr_t
+                text: "N/a [A]"
+            Label:
+                text: "Corrente N:"
+            Label:
+                id: lb_curr_N
+                text: "N/a [A]"
+            Label:
+                text: "Corrente Média:"
+            Label:
+                id: lb_curr_med
+                text: "N/a [A]"
+        BoxLayout:
+            size_hint_y: 0.2
+            Button:
+                height: 10
+                id: bt_corrente_md_cancelar
+                text: "Fechar"
+                on_release:
+                    root.dismiss()

@@ -52,11 +52,15 @@
                 disabled: False
                 text: "Tensão"
                 background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._tensaoModal.open()
             Button:
                 id: bt_corrente
                 disabled: False
                 text: "Corrente"
                 background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._correnteModal.open()
             Button:
                 id: bt_temperatura
                 disabled: False
@@ -129,13 +133,13 @@
                         size: self.size
                         pos: self.pos
                 Label:
-                    id: med_torque
+                    id: lb_torque_mot
                     text: "AGUARDANDO"
                 Label:
-                    id: med_rpm
+                    id: lb_rot_motor
                     text: "AGUARDANDO"
                 Label:
-                    id: med_velocidade
+                    id: lb_vel_est
                     text: "AGUARDANDO"
 
         BoxLayout:

@@ -3,8 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from interface.interface_popup import ModbusConfig
-from threading import Thread
+from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente
 from os import path
 from time import sleep
 import sys
@@ -78,6 +77,8 @@ class MyWidget(BoxLayout):
 
         # Popups
         self._ipConfigModal = ModbusConfig()
+        self._tensaoModal = ModalTensao()
+        self._correnteModal = ModalCorrente()
     
     def __set_modbus_conn_params(self, host: str, port: int, scan_time: int = 1):
         """
