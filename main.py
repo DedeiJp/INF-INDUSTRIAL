@@ -16,9 +16,11 @@ class App_main(App):
         self._widget = ui_p.MyWidget()
         return self._widget
     
-    def app_stop(self):
-        # TODO: Avaliar para que serve essa função
-        self._widget.stopRefresh()
+    def on_stop(self):
+        """
+        Método de fechamento do aplicativo.
+        """
+        self._widget.shutdown()
     
 if __name__ == '__main__':
     # Window.fullscreen = True

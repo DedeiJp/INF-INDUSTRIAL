@@ -27,6 +27,7 @@ class MyWidget(BoxLayout):
 
     _data_ui_update_thread: Thread = None
     _enable_ui_update: bool = False
+    _shutdown_initiated: bool = False
     
     def __init__(self, **kwargs):
         """
@@ -87,6 +88,13 @@ class MyWidget(BoxLayout):
             "status_mot": { "addr": 1330, "float": False, "multiplicador": 1, "bit": 0, "valor": None, "unidade": "", "widget": self},
             "torque_mot": { "addr": 1420, "float": True, "multiplicador": 100, "valor": None, "unidade": "N*m", "widget": self}
         }
+
+    def shutdown(self):
+        self._shutdown_initiated = True
+        sleep(self._modbusConnParams["scan_time"] / 1000)
+        if self._modbusClient:
+            self.close_modbus_connection()
+        self.clear_widgets()
     
     def set_modbus_scan_time(self, scan_time: int):
         print("Definindo intervalo de atualização de dados modbus e UI")
@@ -149,7 +157,7 @@ class MyWidget(BoxLayout):
         """
         Realiza leitura dos dados do servidor modbus e atualiza a interface com os dados atualizados
         """
-        while True:
+        while not self._shutdown_initiated:
             try:
                 while self._enable_ui_update:
                     print("Atualizando dados...")
