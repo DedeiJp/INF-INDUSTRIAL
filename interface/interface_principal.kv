@@ -66,11 +66,15 @@
                 disabled: False
                 text: "Temperatura"
                 background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._temperaturaModal.open()
             Button:
                 id: bt_potencia
                 disabled: False
                 text: "Potencia"
                 background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._potenciaModal.open()
             Button:
                 id: bt_comandos
                 disabled: False
