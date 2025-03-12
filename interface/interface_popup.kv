@@ -134,3 +134,123 @@
                 text: "Fechar"
                 on_release:
                     root.dismiss()
+
+<ModalPotencia>:
+    title: "Potencia do Motor"
+    size_hint_x: 0.7
+    size_hint_y: None
+    height: 600
+    BoxLayout:
+        id: md_corrente_config
+        orientation: 'vertical'
+        GridLayout:
+            cols: 6
+            rows: 4
+            Label:
+                text: "Potencia Ativa R:"
+            Label:
+                id: lb_pot_ativ_r
+                text: "N/a [P]"
+            Label:
+                text: "Potencia Reativa R:"
+            Label:
+                id: lb_pot_reativ_r
+                text: "N/a [VAR]"
+            Label:
+                text: "Potencia Aparente R:"
+            Label:
+                id: lb_pot_apar_r
+                text: "N/a [VA]"
+            Label:
+                text: "Potencia Ativa S:"
+            Label:
+                id: lb_pot_ativ_s
+                text: "N/a [P]"
+            Label:
+                text: "Potencia Reativa S:"
+            Label:
+                id: lb_pot_reativ_s
+                text: "N/a [VAR]"
+            Label:
+                text: "Potencia Aparente S:"
+            Label:
+                id: lb_pot_apar_s
+                text: "N/a [VA]"
+            Label:
+                text: "Potencia Ativa T:"
+            Label:
+                id: lb_pot_ativ_t
+                text: "N/a [P]"
+            Label:
+                text: "Potencia Reativa T:"
+            Label:
+                id: lb_pot_reativ_t
+                text: "N/a [VAR]"
+            Label:
+                text: "Potencia Aparente T:"
+            Label:
+                id: lb_pot_apar_t
+                text: "N/a [VA]"
+            Label:
+                text: "Potencia Ativa Total:"
+            Label:
+                id: lb_pot_ativ_total
+                text: "N/a [P]"
+            Label:
+                text: "Potencia Reativa Total:"
+            Label:
+                id: lb_pot_reativ_total
+                text: "N/a [VAR]"
+            Label:
+                text: "Potencia Aparente Total:"
+            Label:
+                id: lb_pot_apar_total
+                text: "N/a [VA]"
+        BoxLayout:
+            size_hint_y: 0.2
+            Button:
+                height: 10
+                id: bt_Potencia_md_cancelar
+                text: "Fechar"
+                on_release:
+                    root.dismiss()
+
+<ModalTemperatura>:
+    title: "Temperaturas do Motor"
+    size_hint_x: 0.3
+    size_hint_y: None
+    height: 600
+    BoxLayout:
+        id: md_corrente_config
+        orientation: 'vertical'
+        GridLayout:
+            cols: 2
+            rows: 5
+            Label:
+                text: "Temperatura R:"
+            Label:
+                id: lb_temp_r
+                text: "N/a [C°]"
+            Label:
+                text: "Temperatura S:"
+            Label:
+                id: lb_temp_s
+                text: "N/a [C°]"
+            Label:
+                text: "Temperatura T:"
+            Label:
+                id: lb_temp_r
+                text: "N/a [C°]"
+            Label:
+                text: "Temperatura da Carcaça:"
+            Label:
+                id: lb_temp_carc
+                text: "N/a [C°]"
+        BoxLayout:
+            size_hint_y: 0.2
+            Button:
+                height: 10
+                id: bt_temperatura_md_cancelar
+                text: "Fechar"
+                on_release:
+                    root.dismiss()

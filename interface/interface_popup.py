@@ -21,7 +21,7 @@ class ModbusConfig(Popup):
 
 class ModalTensao(Popup):
     """""
-    Popup da configuração de IP e Porta no MODBUS
+    Popup da do Modal de Tensao
     """
 
     def __init__(self, **kwargs):
@@ -33,7 +33,7 @@ class ModalTensao(Popup):
 
 class ModalCorrente(Popup):
     """""
-    Popup da configuração de IP e Porta no MODBUS
+    Popup do Modal de Corrente
     """
 
     def __init__(self, **kwargs):
@@ -41,4 +41,27 @@ class ModalCorrente(Popup):
         Construtor da classe ModalCorrente
         """
         super().__init__(**kwargs)
+
+class ModalPotencia(Popup):
+    """""
+    Popup do Modal de Potencia
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalPotencia
+        """
+        super().__init__(**kwargs)
+
+class ModalTemperatura(Popup):
+    """""
+    Popup do Modal de Temperatura
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalTemperatura
+        """
+        super().__init__(**kwargs)
+
 

@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente
+from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente, ModalTemperatura, ModalPotencia
 from os import path
 from time import sleep
 from threading import Thread
@@ -80,6 +80,8 @@ class MyWidget(BoxLayout):
         self._ipConfigModal = ModbusConfig()
         self._tensaoModal = ModalTensao()
         self._correnteModal = ModalCorrente()
+        self._potenciaModal = ModalPotencia()
+        self._temperaturaModal = ModalTemperatura()
     
     def set_modbus_scan_time(self, scan_time: int):
         print("Definindo intervalo de atualização de dados modbus e UI")
