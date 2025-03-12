@@ -34,12 +34,12 @@ class ClienteMODBUS():
         """
         self._cliente.close()
 
-    def connect(self):
+    def connect(self) -> bool:
         """
         Cria conexão caso ela esteja fechada ou não exista
         """
         if not self.is_connected():
-            self._cliente.connect()
+            return self._cliente.connect()
 
     def is_connected(self) -> bool:
         return self._cliente.connected
