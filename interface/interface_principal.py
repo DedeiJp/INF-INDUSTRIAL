@@ -6,6 +6,7 @@ from kivy.config import Config
 from interface.interface_popup import ModbusConfig
 from threading import Thread
 from os import path
+from time import sleep
 import sys
 
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
@@ -20,50 +21,50 @@ class MyWidget(BoxLayout):
         'scan_time': 1
     }
     __modbusDataTable: dict[dict[str, str|int]] = {
-        "tipo_motor": { "addr": 708, "float": True, "multiplicador": 1, "valor": None},
-        "temp_r": { "addr": 700, "float": True, "multiplicador": 10, "valor": None},
-        "temp_s": { "addr": 702, "float": True, "multiplicador": 10, "valor": None},
-        "temp_t": { "addr": 704, "float": True, "multiplicador": 10, "valor": None},
-        "temp_carc": { "addr": 706, "float": True, "multiplicador": 10, "valor": None},
-        "carga_est": { "addr": 710, "float": True, "multiplicador": 1, "valor": None},
-        "vel_est": { "addr": 724, "float": True, "multiplicador": 1, "valor": None},
-        "curr_r": { "addr": 840, "float": False, "multiplicador": 100, "valor": None},
-        "curr_s": { "addr": 841, "float": False, "multiplicador": 100, "valor": None},
-        "curr_t": { "addr": 842, "float": False, "multiplicador": 100, "valor": None},
-        "curr_N": { "addr": 843, "float": False, "multiplicador": 100, "valor": None},
-        "curr_med": { "addr": 845, "float": False, "multiplicador": 100, "valor": None},
-        "tens_rs": { "addr": 847, "float": False, "multiplicador": 10, "valor": None},
-        "tens_st": { "addr": 848, "float": False, "multiplicador": 10, "valor": None},
-        "tens_tr": { "addr": 849, "float": False, "multiplicador": 10, "valor": None},
-        "pot_ativ_r": { "addr": 852, "float": False, "multiplicador": 1, "valor": None},
-        "pot_ativ_s": { "addr": 853, "float": False, "multiplicador": 1, "valor": None},
-        "pot_ativ_t": { "addr": 854, "float": False, "multiplicador": 1, "valor": None},
-        "pot_ativ_total": { "addr": 855, "float": False, "multiplicador": 1, "valor": None},
-        "pot_reativ_r": { "addr": 856, "float": False, "multiplicador": 1, "valor": None},
-        "pot_reativ_s": { "addr": 857, "float": False, "multiplicador": 1, "valor": None},
-        "pot_reativ_t": { "addr": 858, "float": False, "multiplicador": 1, "valor": None},
-        "pot_reativ_total": { "addr": 859, "float": False, "multiplicador": 1, "valor": None},
-        "pot_apar_r": { "addr": 860, "float": False, "multiplicador": 1, "valor": None},
-        "pot_apar_s": { "addr": 861, "float": False, "multiplicador": 1, "valor": None},
-        "pot_apar_t": { "addr": 862, "float": False, "multiplicador": 1, "valor": None},
-        "pot_apar_total": { "addr": 863, "float": False, "multiplicador": 1, "valor": None},
-        "rot_motor": { "addr": 884, "float": True, "multiplicador": 1, "valor": None},
-        "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": None},
-        "ctrl_partida_inv": { "addr": 1312, "float": False, "multiplicador": 1, "valor": None},
-        "freq_partida_inv": { "addr": 1313, "float": False, "multiplicador": 10, "valor": None},
-        "tempo_rampa_partida_inv": { "addr": 1314, "float": False, "multiplicador": 10, "valor": None},
-        "tempo_rampa_desacc_inv": { "addr": 1315, "float": False, "multiplicador": 10, "valor": None},
-        "ctrl_partida_soft": { "addr": 1316, "float": False, "multiplicador": 1, "valor": None},
-        "tempo_rampa_partida_soft": { "addr": 1317, "float": False, "multiplicador": 1, "valor": None},
-        "tempo_rampa_desacc_soft": { "addr": 1318, "float": False, "multiplicador": 1, "valor": None},
-        "ctrl_partida_dir": { "addr": 1319, "float": False, "multiplicador": 1, "valor": None},
-        "ctrl_driver_partida": { "addr": 1324, "float": False, "multiplicador": 1, "valor": None},
-        "ctrl_tipo_pid": { "addr": 1332, "float": False, "multiplicador": 1, "valor": None},
-        "energ_ativ": { "addr": 1210, "float": False, "multiplicador": 1, "valor": None},
-        "energ_reativ": { "addr": 1212, "float": False, "multiplicador": 1, "valor": None},
-        "energ_apar": { "addr": 1214, "float": False, "multiplicador": 1, "valor": None},
-        "status_mot": { "addr": 1330, "float": False, "multiplicador": 1, "bit": 0, "valor": None},
-        "torque_mot": { "addr": 1420, "float": True, "multiplicador": 100, "valor": None}
+        "tipo_motor": { "addr": 708, "float": True, "multiplicador": 1, "valor": None, "unidade": ""},
+        "temp_r": { "addr": 700, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C"},
+        "temp_s": { "addr": 702, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C"},
+        "temp_t": { "addr": 704, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C"},
+        "temp_carc": { "addr": 706, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C"},
+        "carga_est": { "addr": 710, "float": True, "multiplicador": 1, "valor": None, "unidade": "Kgf/cm²"},
+        "vel_est": { "addr": 724, "float": True, "multiplicador": 1, "valor": None, "unidade": "m/min"},
+        "curr_r": { "addr": 840, "float": False, "multiplicador": 100, "valor": None, "unidade": "A"},
+        "curr_s": { "addr": 841, "float": False, "multiplicador": 100, "valor": None, "unidade": "A"},
+        "curr_t": { "addr": 842, "float": False, "multiplicador": 100, "valor": None, "unidade": "A"},
+        "curr_N": { "addr": 843, "float": False, "multiplicador": 100, "valor": None, "unidade": "A"},
+        "curr_med": { "addr": 845, "float": False, "multiplicador": 100, "valor": None, "unidade": "A"},
+        "tens_rs": { "addr": 847, "float": False, "multiplicador": 10, "valor": None, "unidade": "V"},
+        "tens_st": { "addr": 848, "float": False, "multiplicador": 10, "valor": None, "unidade": "V"},
+        "tens_tr": { "addr": 849, "float": False, "multiplicador": 10, "valor": None, "unidade": "V"},
+        "pot_ativ_r": { "addr": 852, "float": False, "multiplicador": 1, "valor": None, "unidade": "W"},
+        "pot_ativ_s": { "addr": 853, "float": False, "multiplicador": 1, "valor": None, "unidade": "W"},
+        "pot_ativ_t": { "addr": 854, "float": False, "multiplicador": 1, "valor": None, "unidade": "W"},
+        "pot_ativ_total": { "addr": 855, "float": False, "multiplicador": 1, "valor": None, "unidade": "W"},
+        "pot_reativ_r": { "addr": 856, "float": False, "multiplicador": 1, "valor": None, "unidade": "VAr"},
+        "pot_reativ_s": { "addr": 857, "float": False, "multiplicador": 1, "valor": None, "unidade": "VAr"},
+        "pot_reativ_t": { "addr": 858, "float": False, "multiplicador": 1, "valor": None, "unidade": "VAr"},
+        "pot_reativ_total": { "addr": 859, "float": False, "multiplicador": 1, "valor": None, "unidade": "VAr"},
+        "pot_apar_r": { "addr": 860, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA"},
+        "pot_apar_s": { "addr": 861, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA"},
+        "pot_apar_t": { "addr": 862, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA"},
+        "pot_apar_total": { "addr": 863, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA"},
+        "rot_motor": { "addr": 884, "float": True, "multiplicador": 1, "valor": None, "unidade": "RPM"},
+        "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": None, "unidade": ""},
+        "ctrl_partida_inv": { "addr": 1312, "float": False, "multiplicador": 1, "valor": None, "ctrl": True}, # TODO: Definir valor inicial das variáveis de controle
+        "freq_partida_inv": { "addr": 1313, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
+        "tempo_rampa_partida_inv": { "addr": 1314, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
+        "tempo_rampa_desacc_inv": { "addr": 1315, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
+        "ctrl_partida_soft": { "addr": 1316, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "tempo_rampa_partida_soft": { "addr": 1317, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "tempo_rampa_desacc_soft": { "addr": 1318, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "ctrl_partida_dir": { "addr": 1319, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "ctrl_driver_partida": { "addr": 1324, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "ctrl_tipo_pid": { "addr": 1332, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "energ_ativ": { "addr": 1210, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "energ_reativ": { "addr": 1212, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "energ_apar": { "addr": 1214, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+        "status_mot": { "addr": 1330, "float": False, "multiplicador": 1, "bit": 0, "valor": None, "unidade": ""},
+        "torque_mot": { "addr": 1420, "float": True, "multiplicador": 100, "valor": None, "unidade": "N*m"}
     }
 
     _data_ui_update_thread: Thread = None
@@ -105,13 +106,13 @@ class MyWidget(BoxLayout):
         connected = self._modbusClient.connect()
 
         if connected:
-            self.__start_data_reading_thread()
+            self.__start_update_thread()
 
     def __close_modbus_connection(self):
         self._modbusClient.close()
         self._enable_ui_update = False
 
-    def __start_data_reading_thread(self):
+    def __start_update_thread(self):
         """
         Inicializa a thread de leitura de dados e atualização de interface
         """
@@ -127,19 +128,34 @@ class MyWidget(BoxLayout):
         """
         try:
             while self._enable_ui_update:
-                self._read_and_update_modbus_data()
+                self._update_data()
+                self._update_ui()
+                sleep(self._modbusConnParams["scan_time"])
         except Exception as e:
             self.__close_modbus_connection()
             print("Erro: ", e.args)
 
-    def _read_and_update_modbus_data(self):
+    def _update_data(self):
         """
         Realiza leitura e atualização em memória dos dados buscado no servidor modbus
         """
-        for nome_dado in self.__modbusDataTable.keys():
-            self.__modbusDataTable[nome_dado]["valor"] = self._modbusClient.lerDado(\
+        for info_dado in self.__modbusDataTable.values():
+            if info_dado["ctrl"]:
+                continue
+
+            info_dado["valor"] = self._modbusClient.lerDado(\
                 addr.HOLDING_REGISTER,\
-                self.__modbusDataTable[nome_dado]["addr"],\
-                float if self.__modbusDataTable[nome_dado]["float"] else int,\
-                self.__modbusDataTable[nome_dado]["multiplicador"]\
+                info_dado["addr"],\
+                float if info_dado["float"] else int,\
+                info_dado["multiplicador"]\
             )
+
+    def _update_ui(self):
+        """
+        Atualiza a UI com os dados oriundos da tabela modbus
+        """
+        for nome_dado, info_dado in self.__modbusDataTable.items():
+            if info_dado["ctrl"]:
+                continue
+
+            self.ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + info_dado["unidade"]
