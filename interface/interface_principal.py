@@ -6,6 +6,7 @@ from kivy.config import Config
 from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente
 from os import path
 from time import sleep
+from threading import Thread
 import sys
 
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
