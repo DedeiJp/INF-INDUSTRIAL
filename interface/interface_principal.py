@@ -9,6 +9,11 @@ from time import sleep
 from threading import Thread
 import sys
 
+from kivymd.icon_definitions import md_icons
+from kivymd.uix.screen import MDScreen
+from kivymd.app import MDApp
+from kivymd.uix.list import MDListItem
+
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from cliente_modbus.clientemodbus import ClienteMODBUS, TipoEndereco as addr
 
