@@ -177,6 +177,7 @@ class MyWidget(BoxLayout):
             if is_ctrl_var:
                 continue
 
+            
             info_dado["valor"] = self._modbusClient.lerDado(\
                 addr.HOLDING_REGISTER,\
                 info_dado["addr"],\
