@@ -1,12 +1,56 @@
 #:kivy 1.11.1
 
-<IpConfigModbus>:
-    title: "Configuração - Conexão MODBUS"
-    size_hint_x: 0.4
+<ModbusConfig>:
+    title: "MODBUS - Ip, Porta e Scan Time"
+    size_hint_x: 0.3
     size_hint_y: None
-    height: 200
+    height: 225
     BoxLayout:
-        id: layout_modbus
+        id: md_modbus_config
         orientation: 'vertical'
-        Button:
-            text: "piroca"
+        GridLayout:
+            cols: 2
+            rows: 3
+            Label:
+                text: "Ip Esteira"
+            TextInput:
+                id: input_ip
+                halign: 'center'
+            Label:
+                text: "Porta Esteira"
+            TextInput:
+                id: input_porta
+                halign: 'center'
+            Label:
+                text: "Scan Time [ms]"
+            TextInput:
+                id: input_scantime
+                halign: 'center'
+        BoxLayout:
+            size_hint:(1, 0.35)
+            orientation: 'horizontal'
+            Button:
+                height: 10
+                id: bt_modbusconfig_md_scantime
+                text: "Definir Scan Time"
+                on_release:
+        BoxLayout:
+            size_hint:(1, 0.35)
+            orientation: 'horizontal'
+            Button:
+                height: 10
+                id: bt_modbusconfig_md_conectar
+                text: "Conectar"
+                on_release:
+            Button:
+                height: 10
+                id: bt_modbusconfig_md_desconectar
+                text: "Desconectar"
+                on_release:
+            Button:
+                height: 10
+                id: bt_modbusconfig_md_cancelar
+                text: "Cancelar"
+                on_release:
+                    root.limpar_dados()
+                    root.dismiss()

@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from interface.interface_popup import IpConfigModbus
+from interface.interface_popup import ModbusConfig
 from os import path
 import sys
 
@@ -72,8 +72,7 @@ class MyWidget(BoxLayout):
         super().__init__()
 
         # Popups
-        self._ipConfigModal = IpConfigModbus()
-
+        self._ipConfigModal = ModbusConfig()
     
     def __setModbusConnParams(self, host: str, port: int, scan_time: int = 1):
         """
