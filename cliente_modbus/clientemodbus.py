@@ -119,8 +119,10 @@ class ClienteMODBUS():
                         data_type=ModbusClientMixin.DATATYPE.FLOAT32,\
                         word_order='little'\
                     )[0]/multiplicador
-                else:
-                    return resp.registers[0]/multiplicador
+                else: # int16
+                    raw_val = resp.registers[0]
+                    signed_val = raw_val if raw_val < 32768 else raw_val - 65536
+                    return int(signed_val/multiplicador)
                 
             case TipoEndereco.COIL:
                 return self._cliente.read_coils(addr,1)[0]
