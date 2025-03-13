@@ -12,7 +12,7 @@
     orientation: 'vertical'
     canvas:
         Color:
-            rgb: 0.647, 0.612, 0.58
+            rgba: (99/255,114/255,143/255,255/255)
             s: 0.3
         Rectangle:
             size: self.size
@@ -22,14 +22,33 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: (0.3, 1)
-            Label:
-                text: "Status da Conexão"
-            Button:
-                id: client_status_mainwidget
-                text: "Cliente Desconectado"
-                disabled: True
-                background_color: (1,0,0,1)
-                color: (1,0,0,1)
+            BoxLayout:
+                size_hint: (1, 0.5)
+                Label:
+                    text: "Status da Conexão"
+            MDBoxLayout:
+                orientation: 'vertical'
+                BoxLayout:
+                    size_hint: (1, 0.5)
+                MDButton:
+                    disabled: False
+                    disabled_color: "white"
+                    pos_hint: {"center_x": 0.5, "center_y": .5}
+                    style: "elevated"
+                    theme_bg_color: "Custom"
+                    md_bg_color: (99/255,114/255,143/255,255/255)
+                    MDButtonIcon:
+                        id: lb_status_conected_icon
+                        icon: "lan-disconnect"
+                        theme_icon_color: "Custom"
+                        icon_color: "white"
+                    MDButtonText:
+                        id: lb_status_conected_text
+                        theme_text_color: "Custom"
+                        text_color: "white"
+                        text: "Cliente Desconectado"
+                BoxLayout:
+                    size_hint: (1, 0.5)
         BoxLayout:
             orientation: 'vertical'
             size_hint: (0.3, 1)
@@ -47,7 +66,7 @@
     FloatLayout:
         canvas:
             Color:
-                rgb: 0.647, 0.612, 0.58
+                rgba: (203/255,208/255,219/255,255/255)
             Rectangle:
                 size: self.size
 
