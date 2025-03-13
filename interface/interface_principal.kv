@@ -1,5 +1,13 @@
 #:kivy 1.11.1
 
+#:import images_path kivymd.images_path
+
+
+<CustomOneLineIconListItem>:
+    IconLeftWidget:
+        icon: root.icon
+
+
 <MyWidget>:
     orientation: 'vertical'
     canvas:
@@ -42,7 +50,14 @@
                 rgb: 0.647, 0.612, 0.58
             Rectangle:
                 size: self.size
-        
+
+        MDIconButton:
+            style: "tonal"
+            icon: 'temperature-celsius'
+            pos_hint: {"x": 0.61, "y":0.68}
+            on_release:
+                root._temperaturaModal.open()
+
         GridLayout:
             size_hint: (0.3, 0.3)
             pos_hint: {"x": 0.01, "y":0.68}
@@ -85,7 +100,6 @@
                 disabled: False
                 text: "PID"
                 background_color:(0.647, 0.612, 0.58, 1)
-        
         BoxLayout:
             size_hint: (0.25, 0.08)
             pos_hint: {"x": 0.035, "y":0.575}

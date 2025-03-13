@@ -1,10 +1,10 @@
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
 from kivy.uix.layout import Layout
 import interface.interface_principal as ui_p
 
-class App_main(App):
+class App_main(MDApp):
     """
     Aplicativo principal:
         Herda classe App da kivy.
