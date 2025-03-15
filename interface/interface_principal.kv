@@ -85,13 +85,14 @@
                 rgba: (203/255,208/255,219/255,255/255)
             Rectangle:
                 size: self.size
-        FloatLayout:
+        MDFloatLayout:
             size_hint: (0.45, 1)
             canvas:
                 Color:
                     rgba: (203/255,208/255,219/255,255/255)
                 Rectangle:
                     size: self.size
+
         MDFloatLayout:
             canvas:
                 Color:
@@ -103,6 +104,7 @@
                 source:'img/model/MODELO-VERDE.png'
                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
                 size: self.texture_size
+
 
             MDIconButton:
                 id: bt_temperatura
@@ -157,7 +159,7 @@
                     root._correnteModal.open()
 
             MDIconButton:
-                id: bt_velocidade
+                id: bt_torque
                 disabled: False
                 icon: "alpha-t-box-outline"
                 style: "tonal"
@@ -181,6 +183,19 @@
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
                     root._correnteModal.open()
+
+            MDIconButton:
+                id: bt_velocidade
+                disabled: False
+                icon: "speedometer"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.500, "center_y": 0.2}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._correnteModal.open()
             
             Bar:
                 id: bar_torque
@@ -200,6 +215,14 @@
                 color: (82/255, 96/255, 122/255, 255/255)
                 background_color: (175/255,184/255,199/255,255/255)
 
+            Bar:
+                id: bar_velocidade
+                value: 85
+                orientation: 'lr' # horizontal bar
+                size_hint: (0.4, 0.025)
+                pos_hint: {"x": 0.555, "y": 0.1887}
+                color: (82/255, 96/255, 122/255, 255/255)
+                background_color: (175/255,184/255,199/255,255/255)
 
         FloatLayout:      
             size_hint: (0.45, 1)
@@ -208,3 +231,52 @@
                     rgba: (203/255,208/255,219/255,255/255)
                 Rectangle:
                     size: self.size
+
+            MDIconButton:
+                id: bt_dados_historicos
+                disabled: False
+                icon: "database-clock-outline"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                theme_font_size: "Custom"
+                font_size: "48sp"
+                pos_hint: {"center_x": 0.500, "center_y": 0.750}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                radius: [self.height / 2, ]
+                size_hint: None, None
+                size: "100dp", "100dp"
+            
+            MDIconButton:
+                id: bt_pid
+                disabled: False
+                icon: "weight"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                theme_font_size: "Custom"
+                font_size: "48sp"
+                pos_hint: {"center_x": 0.500, "center_y": 0.500}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                radius: [self.height / 2, ]
+                size_hint: None, None
+                size: "100dp", "100dp"
+
+            MDIconButton:
+                id: bt_acionamento
+                disabled: False
+                icon: "power-settings"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                theme_font_size: "Custom"
+                font_size: "48sp"
+                pos_hint: {"center_x": 0.500, "center_y": 0.250}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                radius: [self.height / 2, ]
+                size_hint: None, None
+                size: "100dp", "100dp"    
+
