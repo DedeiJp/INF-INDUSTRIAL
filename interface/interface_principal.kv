@@ -47,6 +47,8 @@
                         theme_text_color: "Custom"
                         text_color: "white"
                         text: "Cliente Desconectado"
+                        theme_font_size: "Custom"
+                        font_size: "18sp"
                 BoxLayout:
                     size_hint: (1, 0.5)
         BoxLayout:
@@ -56,147 +58,153 @@
                 text: "ENE118 - INFORMATICA INDUSTRIAL"
             Label:
                 text: "Software Supervisório - Esteira"
-        BoxLayout:
+        MDBoxLayout:
             orientation: 'vertical'
             size_hint: (0.3, 1)
-            Button:
-                text: "Configurações MODBUS - Porta, Ip e Scantime"
+            BoxLayout:
+                size_hint: (1, 0.5)
+            MDButton:
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
                 on_release: root._ipConfigModal.open()
-                background_color:(0.647, 0.612, 0.58, 1)
-    FloatLayout:
+                style: "elevated"
+                theme_bg_color: "Custom"
+                md_bg_color: (99/255,114/255,143/255,255/255)
+                MDButtonText:
+                    id: lb_status_conected_text
+                    theme_text_color: "Custom"
+                    text_color: "white"
+                    text: "Configurações MODBUS - Porta, Ip e Scantime"
+                    theme_font_size: "Custom"
+                    font_size: "18sp"
+            BoxLayout:
+                size_hint: (1, 0.5)
+    BoxLayout:
+        orientation: "horizontal"
         canvas:
             Color:
                 rgba: (203/255,208/255,219/255,255/255)
             Rectangle:
                 size: self.size
-
-        MDIconButton:
-            style: "tonal"
-            icon: 'temperature-celsius'
-            pos_hint: {"x": 0.61, "y":0.68}
-            on_release:
-                root._temperaturaModal.open()
-
-        GridLayout:
-            size_hint: (0.3, 0.3)
-            pos_hint: {"x": 0.01, "y":0.68}
-            cols: 2
-            Button:
-                id: bt_tensao
-                disabled: False
-                text: "Tensão"
-                background_color:(0.647, 0.612, 0.58, 1)
-                on_release:
-                    root._tensaoModal.open()
-            Button:
-                id: bt_corrente
-                disabled: False
-                text: "Corrente"
-                background_color:(0.647, 0.612, 0.58, 1)
-                on_release:
-                    root._correnteModal.open()
-            Button:
-                id: bt_temperatura
-                disabled: False
-                text: "Temperatura"
-                background_color:(0.647, 0.612, 0.58, 1)
-                on_release:
-                    root._temperaturaModal.open()
-            Button:
-                id: bt_potencia
-                disabled: False
-                text: "Potencia"
-                background_color:(0.647, 0.612, 0.58, 1)
-                on_release:
-                    root._potenciaModal.open()
-            Button:
-                id: bt_comandos
-                disabled: False
-                text: "Comandos"
-                background_color:(0.647, 0.612, 0.58, 1)
-            Button:
-                id: bt_pid
-                disabled: False
-                text: "PID"
-                background_color:(0.647, 0.612, 0.58, 1)
-        BoxLayout:
-            size_hint: (0.25, 0.08)
-            pos_hint: {"x": 0.035, "y":0.575}
+        FloatLayout:
+            size_hint: (0.45, 1)
             canvas:
                 Color:
-                    rgb: 0.647, 0.612, 0.58
-                    s: 0.3
+                    rgba: (203/255,208/255,219/255,255/255)
                 Rectangle:
                     size: self.size
-                    pos: self.pos
-            Label:
-                color: (1,1,1,1)
-                text: "Status Motor"
-            Button:
-                id: bt_motor_status
-                disabled: True
-                background_color: (1,0,0,1)
-                color: (1,0,0,1)
-                text: "OFF"
-            
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (0.25, 0.24)
-            pos_hint: {"x": 0.035, "y":0.320}
-
-            BoxLayout:
-                orientation: 'vertical'
-                canvas:
-                    Color:
-                        rgb: 0.647, 0.612, 0.58
-                        s: 0.3
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-                Label:
-                    text: "Torque"
-                Label:
-                    text: "Rotações"
-                Label:
-                    text: "Vel. Esteira"
-
-            BoxLayout:
-                orientation: 'vertical'
-                canvas:
-                    Color:
-                        rgb: 0.647, 0.612, 0.58
-                        s: 0.8
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-                Label:
-                    id: lb_torque_mot
-                    text: "AGUARDANDO"
-                Label:
-                    id: lb_rot_motor
-                    text: "AGUARDANDO"
-                Label:
-                    id: lb_vel_est
-                    text: "AGUARDANDO"
-
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint: (0.3, 0.25)
-            pos_hint: {"x": 0.01, "y":0.05}
-            Button:
-                text: "Grafico - Velocidade"
-                background_color:(0.647, 0.612, 0.58, 1)
-            Button:
-                text: "Grafico - Potencia"
-                background_color:(0.647, 0.612, 0.58, 1) 
-            Button:
-                text: "Dados Historicos"
-                background_color:(0.647, 0.612, 0.58, 1)            
-        
-        BoxLayout:
-            size_hint: (1, 0.7)
-            pos_hint: {"x": 0.15, "y":0.15}
+        MDFloatLayout:
+            canvas:
+                Color:
+                    rgba: (203/255,208/255,219/255,255/255)
+                Rectangle:
+                    size: self.size
             Image:
                 id: img_modelo
-                source:'img/model/GREEN-OFF.png'
-                size: self.size
+                source:'img/model/MODELO-VERDE.png'
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                size: self.texture_size
+
+            MDIconButton:
+                id: bt_temperatura
+                disabled: False
+                icon: "thermometer"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.04, "center_y": 0.173}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._temperaturaModal.open()
+
+            MDIconButton:
+                id: bt_potencia
+                disabled: False
+                icon: "alpha-p-circle-outline"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.112, "center_y": 0.173}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._potenciaModal.open()
+
+            MDIconButton:
+                id: bt_tensao
+                disabled: False
+                icon: "flash-triangle-outline"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.04, "center_y": 0.100}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._tensaoModal.open()
+
+            MDIconButton:
+                id: bt_corrente
+                disabled: False
+                icon: "sine-wave"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.112, "center_y": 0.100}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._correnteModal.open()
+
+            MDIconButton:
+                id: bt_velocidade
+                disabled: False
+                icon: "alpha-t-box-outline"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.04, "center_y": 0.40}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._tensaoModal.open()
+
+            MDIconButton:
+                id: bt_rpm
+                disabled: False
+                icon: "reload"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.112, "center_y": 0.40}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._correnteModal.open()
+            
+            Bar:
+                id: bar_torque
+                value: 85
+                orientation: 'bt' # horizontal bar
+                size_hint: (0.025, 0.4)
+                pos_hint: {"x": 0.027, "y": 0.450}
+                color: (82/255, 96/255, 122/255, 255/255)
+                background_color: (175/255,184/255,199/255,255/255)
+            
+            Bar:
+                id: bar_rmp
+                value: 85
+                orientation: 'bt' # horizontal bar
+                size_hint: (0.025, 0.4)
+                pos_hint: {"x": 0.1, "y": 0.450}
+                color: (82/255, 96/255, 122/255, 255/255)
+                background_color: (175/255,184/255,199/255,255/255)
+
+
+        FloatLayout:      
+            size_hint: (0.45, 1)
+            canvas:
+                Color:
+                    rgba: (203/255,208/255,219/255,255/255)
+                Rectangle:
+                    size: self.size

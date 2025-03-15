@@ -8,6 +8,7 @@ from os import path
 from time import sleep
 from threading import Thread
 import sys
+from kivy.garden import bar
 
 from kivymd.icon_definitions import md_icons
 from kivymd.uix.screen import MDScreen
@@ -137,6 +138,11 @@ class MyWidget(BoxLayout):
         connected = self._modbusClient.connect()
 
         if connected:
+
+            # Habilitação dos botões
+
+            # Mudança de Status
+
             print("Conexão estabelecida com sucesso")
             self._enable_ui_update = True
             self.__start_update_thread()
@@ -145,6 +151,10 @@ class MyWidget(BoxLayout):
         print("Fechando conexão com servidor modbus")
         self._modbusClient.close()
         self._enable_ui_update = False
+
+        # Desabilitação dos botões
+
+        # Mudança de Status
 
     def __start_update_thread(self):
         """
@@ -172,6 +182,10 @@ class MyWidget(BoxLayout):
                 if not self._shutdown_initiated:
                     self.close_modbus_connection()
                     print("Erro ao atualizar dados e interface: ", e.args)
+
+                    # Desabilitação dos Botões
+
+                    # Mudança de Status com Erro
 
     def _update_data(self):
         """

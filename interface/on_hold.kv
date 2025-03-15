@@ -1,0 +1,115 @@
+GridLayout:
+            size_hint: (0.3, 0.3)
+            pos_hint: {"x": 0.01, "y":0.68}
+            cols: 2
+            Button:
+                id: bt_tensao
+                disabled: False
+                text: "Tensão"
+                background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._tensaoModal.open()
+            Button:
+                id: bt_corrente
+                disabled: False
+                text: "Corrente"
+                background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._correnteModal.open()
+            Button:
+                id: bt_temperatura
+                disabled: False
+                text: "Temperatura"
+                background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._temperaturaModal.open()
+            Button:
+                id: bt_potencia
+                disabled: False
+                text: "Potencia"
+                background_color:(0.647, 0.612, 0.58, 1)
+                on_release:
+                    root._potenciaModal.open()
+            Button:
+                id: bt_comandos
+                disabled: False
+                text: "Comandos"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                id: bt_pid
+                disabled: False
+                text: "PID"
+                background_color:(0.647, 0.612, 0.58, 1)
+        BoxLayout:
+            size_hint: (0.25, 0.08)
+            pos_hint: {"x": 0.035, "y":0.575}
+            canvas:
+                Color:
+                    rgb: 0.647, 0.612, 0.58
+                    s: 0.3
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                color: (1,1,1,1)
+                text: "Status Motor"
+            Button:
+                id: bt_motor_status
+                disabled: True
+                background_color: (1,0,0,1)
+                color: (1,0,0,1)
+                text: "OFF"
+            
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.25, 0.24)
+            pos_hint: {"x": 0.035, "y":0.320}
+
+            BoxLayout:
+                orientation: 'vertical'
+                canvas:
+                    Color:
+                        rgb: 0.647, 0.612, 0.58
+                        s: 0.3
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Label:
+                    text: "Torque"
+                Label:
+                    text: "Rotações"
+                Label:
+                    text: "Vel. Esteira"
+
+            BoxLayout:
+                orientation: 'vertical'
+                canvas:
+                    Color:
+                        rgb: 0.647, 0.612, 0.58
+                        s: 0.8
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Label:
+                    id: lb_torque_mot
+                    text: "AGUARDANDO"
+                Label:
+                    id: lb_rot_motor
+                    text: "AGUARDANDO"
+                Label:
+                    id: lb_vel_est
+                    text: "AGUARDANDO"
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.3, 0.25)
+            pos_hint: {"x": 0.01, "y":0.05}
+            Button:
+                text: "Grafico - Velocidade"
+                background_color:(0.647, 0.612, 0.58, 1)
+            Button:
+                text: "Grafico - Potencia"
+                background_color:(0.647, 0.612, 0.58, 1) 
+            Button:
+                text: "Dados Historicos"
+                background_color:(0.647, 0.612, 0.58, 1)  
