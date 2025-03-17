@@ -140,7 +140,7 @@ class MyWidget(BoxLayout):
         if connected:
 
             # Habilitação dos botões
-
+            self.activate_buttons()
             # Mudança de Status
 
             print("Conexão estabelecida com sucesso")
@@ -153,7 +153,7 @@ class MyWidget(BoxLayout):
         self._enable_ui_update = False
 
         # Desabilitação dos botões
-
+        self.disable_buttons()
         # Mudança de Status
 
     def __start_update_thread(self):
@@ -184,7 +184,7 @@ class MyWidget(BoxLayout):
                     print("Erro ao atualizar dados e interface: ", e.args)
 
                     # Desabilitação dos Botões
-
+                    self.disable_buttons()
                     # Mudança de Status com Erro
 
     def _update_data(self):
@@ -250,3 +250,26 @@ class MyWidget(BoxLayout):
                 
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
+    
+    def activate_buttons(self):
+        self.ids.bt_temperatura.disabled = False
+        self.ids.bt_potencia.disabled = False
+        self.ids.bt_tensao.disabled = False
+        self.ids.bt_corrente.disabled = False
+        self.ids.bt_torque.disabled = False
+        self.ids.bt_rpm.disabled = False
+        self.ids.bt_velocidade.disabled = False
+        self.ids.bt_pid.disabled = False
+        self.ids.bt_acionamento.disabled = False
+
+    def disable_buttons(self):
+        self.ids.bt_temperatura.disabled = True
+        self.ids.bt_potencia.disabled = True
+        self.ids.bt_tensao.disabled = True
+        self.ids.bt_corrente.disabled = True
+        self.ids.bt_torque.disabled = True
+        self.ids.bt_rpm.disabled = True
+        self.ids.bt_velocidade.disabled = True
+        self.ids.bt_pid.disabled = True
+        self.ids.bt_acionamento.disabled = True
+
