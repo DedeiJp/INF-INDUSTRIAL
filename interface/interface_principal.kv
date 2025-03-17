@@ -70,7 +70,6 @@
                 theme_bg_color: "Custom"
                 md_bg_color: (99/255,114/255,143/255,255/255)
                 MDButtonText:
-                    id: lb_status_conected_text
                     theme_text_color: "Custom"
                     text_color: "white"
                     text: "Configurações MODBUS - Porta, Ip e Scantime"
@@ -199,7 +198,7 @@
             
             Bar:
                 id: bar_torque
-                value: 85
+                value: 0
                 orientation: 'bt' # horizontal bar
                 size_hint: (0.025, 0.4)
                 pos_hint: {"x": 0.027, "y": 0.450}
@@ -208,7 +207,7 @@
             
             Bar:
                 id: bar_rmp
-                value: 85
+                value: 0
                 orientation: 'bt' # horizontal bar
                 size_hint: (0.025, 0.4)
                 pos_hint: {"x": 0.1, "y": 0.450}
@@ -217,7 +216,7 @@
 
             Bar:
                 id: bar_velocidade
-                value: 85
+                value: 0
                 orientation: 'lr' # horizontal bar
                 size_hint: (0.4, 0.025)
                 pos_hint: {"x": 0.555, "y": 0.1887}

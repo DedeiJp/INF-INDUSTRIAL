@@ -142,6 +142,7 @@ class MyWidget(BoxLayout):
             # Habilitação dos botões
             self.activate_buttons()
             # Mudança de Status
+            self.interface_conectado()
 
             print("Conexão estabelecida com sucesso")
             self._enable_ui_update = True
@@ -155,6 +156,7 @@ class MyWidget(BoxLayout):
         # Desabilitação dos botões
         self.disable_buttons()
         # Mudança de Status
+        self.interface_desconectado()
 
     def __start_update_thread(self):
         """
@@ -186,6 +188,7 @@ class MyWidget(BoxLayout):
                     # Desabilitação dos Botões
                     self.disable_buttons()
                     # Mudança de Status com Erro
+                    self.interface_conec_lost()
 
     def _update_data(self):
         """
@@ -273,3 +276,12 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = True
         self.ids.bt_acionamento.disabled = True
 
+    def interface_conectado(self):
+        self.ids.lb_status_conected_text.text = "Cliente Conectado"
+        self.ids.lb_status_conected_icon.icon = "lan-connect"
+    def interface_desconectado(self):
+        self.ids.lb_status_conected_text.text = "Cliente Desconectado"
+        self.ids.lb_status_conected_icon.icon = "lan-disconnect"
+    def interface_conec_lost(self):
+        self.ids.lb_status_conected_text.text = "Conexão Perdida"
+        self.ids.lb_status_conected_icon.icon = "lan-disconnect"
