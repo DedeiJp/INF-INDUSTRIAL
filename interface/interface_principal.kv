@@ -28,27 +28,35 @@
                     text: "Status da Conexão"
             MDBoxLayout:
                 orientation: 'vertical'
-                BoxLayout:
+                FloatLayout:
                     size_hint: (1, 0.5)
-                MDButton:
-                    disabled: False
-                    disabled_color: "white"
-                    pos_hint: {"center_x": 0.5, "center_y": .5}
-                    style: "elevated"
-                    theme_bg_color: "Custom"
-                    md_bg_color: (99/255,114/255,143/255,255/255)
-                    MDButtonIcon:
-                        id: lb_status_conected_icon
-                        icon: "lan-disconnect"
-                        theme_icon_color: "Custom"
-                        icon_color: "white"
-                    MDButtonText:
-                        id: lb_status_conected_text
-                        theme_text_color: "Custom"
-                        text_color: "white"
-                        text: "Cliente Desconectado"
-                        theme_font_size: "Custom"
-                        font_size: "18sp"
+                FloatLayout:
+                    Image:
+                        id: img_warnnig_conn
+                        source:'img/warnning/SEVERIDADE1.png'
+                        pos_hint: {"center_x": 0.18, "center_y": 0.5}
+                        texture: self.texture
+                        height: dp(40)
+                        opacity: 0
+                    MDButton:
+                        disabled: False
+                        disabled_color: "white"
+                        pos_hint: {"center_x": 0.5, "center_y": .5}
+                        style: "elevated"
+                        theme_bg_color: "Custom"
+                        md_bg_color: (99/255,114/255,143/255,255/255)
+                        MDButtonIcon:
+                            id: lb_status_conected_icon
+                            icon: "lan-disconnect"
+                            theme_icon_color: "Custom"
+                            icon_color: "white"
+                        MDButtonText:
+                            id: lb_status_conected_text
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            text: "Cliente Desconectado"
+                            theme_font_size: "Custom"
+                            font_size: "18sp"
                 BoxLayout:
                     size_hint: (1, 0.5)
         BoxLayout:

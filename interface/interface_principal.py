@@ -279,9 +279,12 @@ class MyWidget(BoxLayout):
     def interface_conectado(self):
         self.ids.lb_status_conected_text.text = "Cliente Conectado"
         self.ids.lb_status_conected_icon.icon = "lan-connect"
+        self.ids.img_warnnig_conn.opacity = 0
     def interface_desconectado(self):
         self.ids.lb_status_conected_text.text = "Cliente Desconectado"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
+        self.ids.img_warnnig_conn.opacity = 0
     def interface_conec_lost(self):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
+        self.ids.img_warnnig_conn.opacity = 100
