@@ -8,7 +8,7 @@ from os import path
 from time import sleep
 from threading import Thread
 import sys
-# from kivy.garden.graph import BarPlot as Bar
+from kivy.garden import bar
 
 from kivymd.icon_definitions import md_icons
 from kivymd.uix.screen import MDScreen
