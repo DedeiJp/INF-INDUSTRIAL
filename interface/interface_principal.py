@@ -211,6 +211,8 @@ class MyWidget(BoxLayout):
         """
         Atualiza a UI com os dados oriundos da tabela modbus
         """
+        self.update_bars()
+
         for nome_dado, info_dado in self.__modbusDataTable.items():
             try:
                 is_ctrl_var = info_dado.get("ctrl") is not None
@@ -288,3 +290,12 @@ class MyWidget(BoxLayout):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 100
+
+    def update_bars(self):
+        rpm = (self.__modbusDataTable["rot_motor"]["valor"])
+        torque = (self.__modbusDataTable["torque_mot"]["valor"])
+        velocidade = (self.__modbusDataTable["vel_est"]["valor"])
+
+        self.ids.bar_torque.value = (torque / 1) * 100
+        self.ids.bar_rpm.value = (rpm / 2000) * 100
+        self.ids.bar_velocidade.value = (velocidade / 10) * 100
