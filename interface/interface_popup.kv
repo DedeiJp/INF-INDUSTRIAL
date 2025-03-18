@@ -254,3 +254,38 @@
                 text: "Fechar"
                 on_release:
                     root.dismiss()
+
+<ModalAcionamento>
+    title: "Acionamento do Motor"
+    size_hint_x: 0.8
+    size_hint_y: 0.8
+    height: 600
+    BoxLayout:
+        orientation: 'horizontal'
+        GridLayout:
+            size_hint: (0.35, 1)
+            cols: 1
+            rows: 2
+            Button:
+                id: bt_motor_start
+                text: "Ligar Motor"
+            Button:
+                id: bt_motor_stop
+                text: "Desligar Motor"
+        GridLayout:
+            size_hint: (0.35, 1)
+            cols: 1
+            rows: 4
+            Label:
+                text: "Tipo de Partida"
+            Button:
+                id: bt_partida_direta
+                text: "TESYS DIRETA"
+            Button:
+                id: bt_partida_inversor
+                text: "ATV31 INVERSOR"
+            Button:
+                id: bt_partida_soft
+                text: "ATS58 SOFT-START"
+        FloatLayout:
+            size_hint: (0.35, 1)
