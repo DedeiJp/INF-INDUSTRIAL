@@ -112,7 +112,7 @@ class ClienteMODBUS():
         match tipo_endereco:
             case TipoEndereco.HOLDING_REGISTER:
                 resp = self._cliente.read_holding_registers(address=addr, count=1 if is_int else 4 if is_float else 1)
-            
+
                 if is_float:
                     return self._cliente.convert_from_registers(\
                         registers=resp.registers,\
@@ -122,7 +122,7 @@ class ClienteMODBUS():
                 else: # int16
                     raw_val = resp.registers[0]
                     signed_val = raw_val if raw_val < 32768 else raw_val - 65536
-                    return int(signed_val/multiplicador)
+                    return signed_val/multiplicador
                 
             case TipoEndereco.COIL:
                 return self._cliente.read_coils(addr,1)[0]
