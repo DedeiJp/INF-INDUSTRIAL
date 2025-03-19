@@ -105,3 +105,34 @@ class HistGraphPopup(Popup):
             cb.ids.label.color = value['color']
             cb.id = key
             self.ids.sensores.add_widget(cb)
+
+class DataGraphPopupRPM(Popup):
+    def __init__(self,xmax,plot_color,**kwargs):
+        super().__init__(**kwargs)
+        self.plot = LinePlot(line_width=1.5,color=plot_color)
+        self.ids.graphrpm.add_plot(self.plot)
+        self.ids.graphrpm.xmax = xmax
+
+class LabeledCheckBoxGraphRPM(BoxLayout):
+    pass
+
+class DataGraphPopupVEL(Popup):
+    def __init__(self,xmax,plot_color,**kwargs):
+        super().__init__(**kwargs)
+        self.plot = LinePlot(line_width=1.5,color=plot_color)
+        self.ids.graphvel.add_plot(self.plot)
+        self.ids.graphvel.xmax = xmax
+
+class LabeledCheckBoxGraphTOR(BoxLayout):
+    pass
+
+class DataGraphPopupTOR(Popup):
+    def __init__(self,xmax,plot_color,**kwargs):
+        super().__init__(**kwargs)
+        self.plot = LinePlot(line_width=1.5,color=plot_color)
+        self.ids.graphtor.add_plot(self.plot)
+        self.ids.graphtor.xmax = xmax
+
+class LabeledCheckBoxGraphTOR(BoxLayout):
+    pass
+

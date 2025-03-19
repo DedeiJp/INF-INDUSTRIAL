@@ -52,7 +52,6 @@ class BDHandler:
         """
         try:
             self._lock.acquire()
-            print("Adquire o lock do insert data")
 
             # Prepara os dados para inserção
             timestamp_str = data['timestamp']
@@ -63,12 +62,10 @@ class BDHandler:
             new_entry = DataTable(timestamp=timestamp, **values)
             self._session.add(new_entry)
             self._session.commit()
-            print("Dado inserido no db")
         except Exception as e:
             print("Erro: ", e.args)
             self._session.rollback()
         finally:
-            print("Libera o lock do insert data")
             self._lock.release()
 
     def selectData(self, cols, init_t, final_t):

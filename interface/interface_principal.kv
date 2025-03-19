@@ -176,7 +176,7 @@
                 pos_hint: {"center_x": 0.04, "center_y": 0.40}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
-                    # root._torqueModal.open()
+                    root._graphtor.open()
 
             MDIconButton:
                 id: bt_rpm
@@ -189,7 +189,7 @@
                 pos_hint: {"center_x": 0.112, "center_y": 0.40}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
-                    root._correnteModal.open()
+                    root._graphrpm.open()
 
             MDIconButton:
                 id: bt_velocidade
@@ -202,7 +202,7 @@
                 pos_hint: {"center_x": 0.500, "center_y": 0.2}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
-                    root._correnteModal.open()
+                    root._graphvel.open()
             
             Bar:
                 id: bar_torque

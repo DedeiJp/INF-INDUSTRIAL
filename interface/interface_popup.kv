@@ -465,4 +465,179 @@
         id:label
         font_size: 12
         bold: True
-            
+        
+<DataGraphPopupRPM>:
+    title: "Gráfico em tempo real"
+    BoxLayout:
+        orientation: 'vertical'
+        TimeSeriesGraph:
+            id: graphrpm
+            xlabel: 'Horário'
+            ylabel: 'RPM'
+            background_color: 0.5,0.5,0.5,0.5
+            x_ticks_minor: 1
+            x_ticks_major: 5
+            y_ticks_major: 100
+            y_grid_label: True
+            x_grid_label: True
+            padding: 5
+            x_grid: True
+            y_grid: True
+            xmin:0
+            ymin:0
+            ymax:2000
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1,0.05)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (0.5,1)
+                Label:
+                    size_hint: (0.3,1)
+                    text: "Número de pontos do gráfico"
+                LabeledCheckBoxGraphRPM:
+                    id: mp20
+                    on_kv_post:
+                        self.ids.label.text = '20'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp50
+                    on_kv_post:
+                        self.ids.label.text = '50'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp100
+                    on_kv_post:
+                        self.ids.label.text = '100'
+                        self.ids.checkbox.group = 'cb_group'
+            Button:
+                text: "Fechar"
+                size_hint: (0.2,1)
+                on_release: root.dismiss()
+
+<LabeledCheckBoxGraphRPM>:
+    orientation: 'horizontal'
+    size_hint: (0.1,1)
+    CheckBox:
+        id: checkbox
+        on_active: app.root._graphrpm.ids.graphrpm.setMaxPoints(int(label.text),0) if app.root is not None else None
+    Label:
+        id: label
+        
+
+<DataGraphPopupVEL>:
+    title: "Gráfico em tempo real da velocidade da esteira"
+    BoxLayout:
+        orientation: 'vertical'
+        TimeSeriesGraph:
+            id: graphvel
+            xlabel: 'Horário'
+            ylabel: 'm/s'
+            background_color: 0.5,0.5,0.5,0.5
+            x_ticks_minor: 1
+            x_ticks_major: 5
+            y_ticks_major: 1
+            y_grid_label: True
+            x_grid_label: True
+            padding: 5
+            x_grid: True
+            y_grid: True
+            xmin:0
+            ymin:0
+            ymax:10
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1,0.05)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (0.5,1)
+                Label:
+                    size_hint: (0.3,1)
+                    text: "Número de pontos do gráfico"
+                LabeledCheckBoxGraphRPM:
+                    id: mp20
+                    on_kv_post:
+                        self.ids.label.text = '20'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp50
+                    on_kv_post:
+                        self.ids.label.text = '50'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp100
+                    on_kv_post:
+                        self.ids.label.text = '100'
+                        self.ids.checkbox.group = 'cb_group'
+            Button:
+                text: "Fechar"
+                size_hint: (0.2,1)
+                on_release: root.dismiss()
+
+<LabeledCheckBoxGraphVEL>:
+    orientation: 'horizontal'
+    size_hint: (0.1,1)
+    CheckBox:
+        id: checkbox
+        on_active: app.root._graphvel.ids.graphvel.setMaxPoints(int(label.text),0) if app.root is not None else None
+    Label:
+        id: label
+        
+<DataGraphPopupTOR>:
+    title: "Gráfico em tempo real do torque no motor"
+    BoxLayout:
+        orientation: 'vertical'
+        TimeSeriesGraph:
+            id: graphtor
+            xlabel: 'Horário'
+            ylabel: 'm/s'
+            background_color: 0.5,0.5,0.5,0.5
+            x_ticks_minor: 1
+            x_ticks_major: 5
+            y_ticks_major: 0.1
+            y_grid_label: True
+            x_grid_label: True
+            padding: 5
+            x_grid: True
+            y_grid: True
+            xmin:0
+            ymin:0
+            ymax:1
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1,0.05)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (0.5,1)
+                Label:
+                    size_hint: (0.3,1)
+                    text: "Número de pontos do gráfico"
+                LabeledCheckBoxGraphRPM:
+                    id: mp20
+                    on_kv_post:
+                        self.ids.label.text = '20'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp50
+                    on_kv_post:
+                        self.ids.label.text = '50'
+                        self.ids.checkbox.group = 'cb_group'
+                LabeledCheckBoxGraphRPM:
+                    id: mp100
+                    on_kv_post:
+                        self.ids.label.text = '100'
+                        self.ids.checkbox.group = 'cb_group'
+            Button:
+                text: "Fechar"
+                size_hint: (0.2,1)
+                on_release: root.dismiss()
+
+<LabeledCheckBoxGraphTOR>:
+    orientation: 'horizontal'
+    size_hint: (0.1,1)
+    CheckBox:
+        id: checkbox
+        on_active: app.root._graphtor.ids.graphtor.setMaxPoints(int(label.text),0) if app.root is not None else None
+    Label:
+        id: label
+        

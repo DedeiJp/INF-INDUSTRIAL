@@ -9,7 +9,7 @@ from time import sleep
 from threading import Thread, Lock
 import sys
 from kivy.garden import bar
-from interface.interface_popup import HistGraphPopup
+from interface.interface_popup import HistGraphPopup, DataGraphPopupRPM, DataGraphPopupVEL, DataGraphPopupTOR
 from timeseriesgraph import TimeSeriesGraph
 import random
 from db.bdhandler import BDHandler
@@ -51,6 +51,7 @@ class MyWidget(BoxLayout):
 
     _tipo_partida: int = 0
     
+    _max_points = 20
     def __init__(self,db_path, **kwargs):
         """
         Construtor da interface pricipal
@@ -118,6 +119,7 @@ class MyWidget(BoxLayout):
             "torque_mot": { "addr": 1420, "float": True, "multiplicador": 100, "valor": None, "unidade": "N*m", "widget": self}
         }
 
+        self._timestamp = None
         self._tags = {
         key: None for key, value in self.__modbusDataTable.items()
         if not value.get("ctrl", False)
@@ -130,6 +132,9 @@ class MyWidget(BoxLayout):
             plot_color = (random.random(), random.random(), random.random(), 1)
             self._tags[key] = {'addr': self.__modbusDataTable[key], 'color': plot_color}
 
+        self._graphrpm = DataGraphPopupRPM(self._max_points,self._tags["rot_motor"]["color"])        
+        self._graphvel = DataGraphPopupVEL(self._max_points,self._tags["vel_est"]["color"])
+        self._graphtor = DataGraphPopupTOR(self._max_points,self._tags["torque_mot"]["color"])
         # Inicializa o BDHandler com as tags filtradas
         
         self._filtered_tags = {
@@ -255,7 +260,7 @@ class MyWidget(BoxLayout):
         while not self._shutdown_initiated:
             try:
                 while self._enable_ui_update and self._modbusClient.is_connected():
-                    print("Atualizando dados...")
+                    
                     self._update_data()
                     self._update_ui()
                     sleep(self._modbusConnParams["scan_time"])
@@ -298,7 +303,9 @@ class MyWidget(BoxLayout):
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "values": dados
             }
-            print("Dados coletados:", data_entry)  # Para depuração
+            #print("Dados coletados:", data_entry)  # Para depuração
+
+            self._timestamp = data_entry["timestamp"]
             self._db.insertData(data_entry)  # Chama o método para inserir os dados
 
     def _update_ui(self):
@@ -339,9 +346,20 @@ class MyWidget(BoxLayout):
                         continue
                     case _:
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
-                
+
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
+        # Atualiza o gráfico
+        try:
+            # Converte o timestamp para datetime
+            timestamp = datetime.strptime(self._timestamp, "%Y-%m-%d %H:%M:%S")
+            
+            # Atualiza o gráfico
+            self._graphrpm.ids.graphrpm.updateGraph((timestamp, self.__modbusDataTable["rot_motor"]["valor"]), 0)
+            self._graphvel.ids.graphvel.updateGraph((timestamp, self.__modbusDataTable["vel_est"]["valor"]), 0)
+            self._graphtor.ids.graphtor.updateGraph((timestamp, self.__modbusDataTable["torque_mot"]["valor"]), 0)
+        except Exception as e:
+            print(f"Erro ao atualizar gráfico: {e}")
 
     def _set_tipo_partida(self, tipo_partida: int):
         """
