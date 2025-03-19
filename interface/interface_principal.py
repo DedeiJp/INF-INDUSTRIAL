@@ -15,13 +15,12 @@ from kivymd.uix.screen import MDScreen
 from kivymd.app import MDApp
 from kivymd.uix.list import MDListItem
 
+from kivy.clock import mainthread
+
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from cliente_modbus.clientemodbus import ClienteMODBUS, TipoEndereco as addr
 
 class MyWidget(BoxLayout):
-    # TODO: Implementar lógica de status motor
-    # TODO: Implementar lógica de tipo de motor
-
     _ipConfigModal: Popup
     _modbusClient: ClienteMODBUS = None
     _modbusConnParams: dict = {
@@ -292,88 +291,193 @@ class MyWidget(BoxLayout):
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
 
+    def _set_tipo_partida(self, tipo_partida: int):
+        """
+        Escreve nos registradores modbus adequados para que seja definido o tipo de partida do motor
+        """
+        if tipo_partida >= 0 and tipo_partida <= 2:
+            with self._lock:
+                self.__modbusDataTable["ctrl_driver_partida"]["valor"] = tipo_partida
+
+            self._modbusClient.escreveDado(\
+                addr.HOLDING_REGISTER,\
+                self.__modbusDataTable["ctrl_driver_partida"]["addr"],\
+                str(tipo_partida)\
+            )
+
+
     def set_tipo_partida(self, tipo_partida: int):
         """
-        Define o tipo de partida do motor
+        Inicia uma Thread secundário responsável por escrever nos registradores modbus adequados para que seja definido o tipo de partida do motor
         """
         if (self._motor_driver_type_register_write_thread and self._motor_driver_type_register_write_thread.is_alive()):
             return
 
-        if tipo_partida >= 0 and tipo_partida <= 2:
-            self.__modbusDataTable["ctrl_driver_partida"]["valor"] = tipo_partida
+        self._motor_driver_type_register_write_thread = Thread(target=self._set_tipo_partida, args=(tipo_partida,))
 
-            self._motor_driver_type_register_write_thread = Thread(target = lambda:\
-                self._modbusClient.escreveDado(\
-                addr.HOLDING_REGISTER,\
-                self.__modbusDataTable["ctrl_driver_partida"]["addr"],\
-                str(self.__modbusDataTable["ctrl_driver_partida"]["valor"])\
-            ))
-            self._motor_driver_type_register_write_thread.start()
+        self._motor_driver_type_register_write_thread.start()
 
-    def start_motor(self):
+    def _start_motor(self, acc: int, desacc: int, freq: int):
         """
-        Inicia o motor
+        Escreve nos registradores modbus adequados para que seja realizada a partida do motor
+        """
+        with self._lock:
+            driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
+
+        match driver_partida:
+            case 0:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                    '1'\
+                )
+            case 1:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_partida_soft"]["addr"],\
+                    str(acc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_desacc_soft"]["addr"],\
+                    str(desacc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                    '1'\
+                )
+            case 2:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["freq_partida_inv"]["addr"],\
+                    str(freq)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_partida_inv"]["addr"],\
+                    str(acc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_desacc_inv"]["addr"],\
+                    str(desacc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                    '1'\
+                )
+
+    def start_motor(self, acc: int, desacc: int, freq: int):
+        """
+        Inicia uma Thread secundário responsável por escrever nos registradores modbus adequados para que seja realizado a partida do motor
         """
         if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
             return
+        
+        try:
+            acc = int(acc)
+            desacc = int(desacc)
+            freq = int(freq)
+        except ValueError as ve:
+            print("É preciso definir os valores de aceleração e desaceleração para realizar a partida do motor")
+            return
+        
 
-        match self.__modbusDataTable["driver_partida"]["valor"]:
-            case 0:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
-                        '1'\
-                ))
-            case 1:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
-                        '1'\
-                ))
-            case 2:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
-                        '1'\
-                ))
+        if acc < 10 or desacc < 10 or freq < 0:
+            acc = 10
+            desacc = 10
+            freq = 0
+        elif acc > 60 or desacc > 60 or freq > 60:
+            acc = 60
+            desacc = 60
+            freq = 60
+
+        self._motor_actuator_register_write_thread = Thread(target=self._start_motor, args=(acc, desacc, freq,))
 
         self._motor_actuator_register_write_thread.start()
 
+    def _stop_motor(self):
+        """
+        Escreve nos registradores modbus adequados para que seja realizada a parada do motor
+        """
+        with self._lock:
+            driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
+
+        match driver_partida:
+            case 0:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                    '0'\
+                )
+            case 1:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                    '0'\
+                )
+            case 2:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                    '0'\
+                )
+                      
     def stop_motor(self):
         """
-        Para o motor
+        Inicia uma Thread secundária responsável por escrever nos registradores modbus adequados para que seja realizada a parada do motor
         """
         if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
             return
 
-        match self.__modbusDataTable["driver_partida"]["valor"]:
-            case 0:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
-                        '0'\
-                ))
-            case 1:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
-                        '0'\
-                ))
-            case 2:
-                self._motor_actuator_register_write_thread = Thread(target=lambda:\
-                    self._modbusClient.escreveDado(\
-                        addr.HOLDING_REGISTER,\
-                        self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
-                        '0'\
-                ))
+        self._motor_actuator_register_write_thread = Thread(target=self._stop_motor)
         
         self._motor_actuator_register_write_thread.start()
 
+    def _reset_motor(self):
+        """
+        Escreve nos registradores modbus adequados para que seja realizado o reset do motor
+        """
+        with self._lock:
+            driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
+
+        match driver_partida:
+            case 0:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                    '2'\
+                )
+            case 1:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                    '2'\
+                )
+            case 2:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                    '2'\
+                )
+
+    def reset_motor(self):
+        """
+        Inicia um Thread secundária responsável por escrever nos registradores modbus adequados para que seja realizado o reset do motor
+        """
+        if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
+            return
+        
+        self._motor_actuator_register_write_thread = Thread(target=self._reset_motor)
+
+        self._motor_actuator_register_write_thread.start()
     
     def _enable_buttons(self):
         self.ids.bt_temperatura.disabled = False
@@ -397,17 +501,20 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = True
         self.ids.bt_acionamento.disabled = True
 
+    @mainthread
     def __handle_client_connected(self):
         self.ids.lb_status_conected_text.text = "Cliente Conectado"
         self.ids.lb_status_conected_icon.icon = "lan-connect"
         self.ids.img_warnnig_conn.opacity = 0
-
+    
+    @mainthread
     def __handle_client_disconnected(self):
         self.ids.lb_status_conected_text.text = "Cliente Desconectado"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 0
-
-def __handle_client_lost_connection(self):
+    
+    @mainthread
+    def __handle_client_lost_connection(self):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 100
