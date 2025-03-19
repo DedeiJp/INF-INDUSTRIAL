@@ -12,7 +12,7 @@ class DataTable(Base):
     Modelo da tabela de dados.
     As colunas são criadas dinamicamente no __init__ do BDHandler.
     """
-    __tablename__ = 'dataTable'
+    __tablename__ = 'supervisorio'
     id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(DateTime)
 
