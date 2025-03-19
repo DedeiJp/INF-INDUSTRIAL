@@ -269,9 +269,11 @@
             Button:
                 id: bt_motor_start
                 text: "Ligar Motor"
+                on_release: app.root.start_motor()
             Button:
                 id: bt_motor_stop
                 text: "Desligar Motor"
+                on_release: app.root.stop_motor()
         GridLayout:
             size_hint: (0.35, 1)
             cols: 1
@@ -281,18 +283,15 @@
             Button:
                 id: bt_partida_direta
                 text: "TESYS DIRETA"
-                on_release:
-                    lb_acionameto_selecionado.text = "Partida Direta Selecionada"
+                on_release: app.root.set_tipo_partida(0)
             Button:
                 id: bt_partida_inversor
                 text: "ATV31 INVERSOR"
-                on_release:
-                    lb_acionameto_selecionado.text = "Partida com Inversor Selecionada"
+                on_release: app.root.set_tipo_partida(2)
             Button:
                 id: bt_partida_soft
                 text: "ATS58 SOFT-START"
-                on_release:
-                    lb_acionameto_selecionado.text = "Partida com Soft-Start Selecionada"
+                on_release: app.root.set_tipo_partida(1)
         BoxLayout:
             orientation: "vertical"
             size_hint: (0.35, 1)

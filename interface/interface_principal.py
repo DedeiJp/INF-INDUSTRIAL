@@ -31,9 +31,14 @@ class MyWidget(BoxLayout):
     }
     __modbusDataTable: dict[dict[str, str|int]]
 
+    _motor_actuator_register_write_thread: Thread = None
+    _motor_driver_type_register_write_thread: Thread = None
+
     _data_ui_update_thread: Thread = None
     _enable_ui_update: bool = False
     _shutdown_initiated: bool = False
+
+    _tipo_partida: int = 0
     
     def __init__(self, **kwargs):
         """
@@ -50,7 +55,7 @@ class MyWidget(BoxLayout):
         self._acionamentoModal = ModalAcionamento()
 
         self.__modbusDataTable: dict[dict[str, str|int]] = {
-            "tipo_motor": { "addr": 708, "float": True, "multiplicador": 1, "valor": None, "unidade": "", "widget": self},
+            "tipo_motor": { "addr": 708, "float": False, "multiplicador": 1, "valor": None, "unidade": "", "widget": self},
             "temp_r": { "addr": 700, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
             "temp_s": { "addr": 702, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
             "temp_t": { "addr": 704, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
@@ -225,10 +230,12 @@ class MyWidget(BoxLayout):
                         bit_0 = int(info_dado["valor"]) & 1
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
                         continue
-                    case "tipo_motor":
-                        name_img_motor = "MODELO-VERGE.png" if int(info_dado["valor"]) == 1 else "MODELO-AZUL.png" if int(info_dado["valor"]) == 2 else "MODELO-VERDE.png"
-                        info_dado["widget"].ids[f"lb_{nome_dado}"].source = f"img/model/{name_img_motor}"
-                        continue
+                    # case "tipo_motor":
+                        # TODO: Fazer funcionar
+                        # self._motor_img_opacity = 0 if int(info_dado["valor"]) == 1 else 100 if int(info_dado["valor"]) == 2 else 0
+                        # print(self._motor_img_opacity)
+                        # print("\n\n\n\n\n")
+                        # continue
                     case "driver_partida":
                         driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
@@ -256,6 +263,89 @@ class MyWidget(BoxLayout):
                 
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
+
+    def set_tipo_partida(self, tipo_partida: int):
+        """
+        Define o tipo de partida do motor
+        """
+        if (self._motor_driver_type_register_write_thread.is_alive()):
+            self._motor_driver_type_register_write_thread.join(timeout=10)
+
+        if tipo_partida >= 0 and tipo_partida <= 2:
+            self.__modbusDataTable["driver_partida"]["valor"] = tipo_partida
+
+            self._motor_driver_type_register_write_thread = Thread(lambda:\
+                self._modbusClient.escreveDado(\
+                addr.HOLDING_REGISTER,\
+                self.__modbusDataTable["driver_partida"]["addr"],\
+                self.__modbusDataTable["driver_partida"]["valor"]\
+            ))
+            self._motor_driver_type_register_write_thread.start()
+
+    def start_motor(self):
+        """
+        Inicia o motor
+        """
+        if (self._motor_actuator_register_write_thread.is_alive()):
+            self._motor_actuator_register_write_thread.join(timeout=10)
+
+        match self.__modbusDataTable["driver_partida"]["valor"]:
+            case 0:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                        1\
+                ))
+            case 1:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                        1\
+                ))
+            case 2:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                        1\
+                ))
+
+        self._motor_actuator_register_write_thread.start()
+
+    def stop_motor(self):
+        """
+        Para o motor
+        """
+        if (self._motor_actuator_register_write_thread.is_alive()):
+            self._motor_actuator_register_write_thread.join(timeout=10)
+
+        match self.__modbusDataTable["driver_partida"]["valor"]:
+            case 0:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                        0\
+                ))
+            case 1:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                        0\
+                ))
+            case 2:
+                self._motor_actuator_register_write_thread = Thread(lambda:\
+                    self._modbusClient.escreveDado(\
+                        addr.HOLDING_REGISTER,\
+                        self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                        0\
+                ))
+        
+        self._motor_actuator_register_write_thread.start()
+
     
     def activate_buttons(self):
         self.ids.bt_temperatura.disabled = False
@@ -299,4 +389,4 @@ class MyWidget(BoxLayout):
 
         self.ids.bar_torque.value = (torque / 1) * 100
         self.ids.bar_rpm.value = (rpm / 2000) * 100
-        self.ids.bar_velocidade.value = (velocidade / 10) * 100
+        self.ids.bar_velocidade.value = (velocidade / 100) * 100
