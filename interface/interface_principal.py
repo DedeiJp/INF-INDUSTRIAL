@@ -606,7 +606,7 @@ class MyWidget(BoxLayout):
         if self._PID_parameters_write_thread and self._PID_parameters_write_thread.is_alive():
             return
 
-        self._PID_parameters_write_thread = Thread(target=self._set_pid_parameters, args=(auto, sp, mv, P, I, D))
+        self._PID_parameters_write_thread = Thread(target=self._set_pid_parameters, args=(auto, sp, mv, P, I, D,))
 
         self._PID_parameters_write_thread.start()
     
