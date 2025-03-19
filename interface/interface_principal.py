@@ -49,7 +49,7 @@ class MyWidget(BoxLayout):
         self._temperaturaModal = ModalTemperatura()
 
         self.__modbusDataTable: dict[dict[str, str|int]] = {
-            "tipo_motor": { "addr": 708, "float": True, "multiplicador": 1, "valor": None, "unidade": "", "widget": self},
+            "tipo_motor": { "addr": 708, "float": False, "multiplicador": 1, "valor": None, "unidade": "", "widget": self},
             "temp_r": { "addr": 700, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
             "temp_s": { "addr": 702, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
             "temp_t": { "addr": 704, "float": True, "multiplicador": 10, "valor": None, "unidade": "°C", "widget": self._temperaturaModal},
@@ -224,10 +224,12 @@ class MyWidget(BoxLayout):
                         bit_0 = int(info_dado["valor"]) & 1
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
                         continue
-                    case "tipo_motor":
-                        name_img_motor = "MODELO-VERGE.png" if int(info_dado["valor"]) == 1 else "MODELO-AZUL.png" if int(info_dado["valor"]) == 2 else "MODELO-VERDE.png"
-                        info_dado["widget"].ids[f"lb_{nome_dado}"].source = f"img/model/{name_img_motor}"
-                        continue
+                    # case "tipo_motor":
+                        # TODO: Fazer funcionar
+                        # self._motor_img_opacity = 0 if int(info_dado["valor"]) == 1 else 100 if int(info_dado["valor"]) == 2 else 0
+                        # print(self._motor_img_opacity)
+                        # print("\n\n\n\n\n")
+                        # continue
                     case "driver_partida":
                         driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
