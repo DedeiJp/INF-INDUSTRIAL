@@ -115,3 +115,30 @@ GridLayout:
             Button:
                 text: "Dados Historicos"
                 background_color:(0.647, 0.612, 0.58, 1)  
+
+
+            MDIconButton:
+                id: bt_torque
+                disabled: True
+                icon: "alpha-t-box-outline"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.04, "center_y": 0.50}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._graphtor.open()
+
+            MDIconButton:
+                id: bt_rpm
+                disabled: True
+                icon: "reload"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.212, "center_y": 0.50}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._graphrpm.open()

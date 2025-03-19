@@ -323,7 +323,7 @@ class MyWidget(BoxLayout):
                 match nome_dado:
                     case "status_mot":
                         bit_0 = int(info_dado["valor"]) & 1
-                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = "DESLIGADO" if bit_0 else "LIGADO"
                         continue
                     case "tipo_motor":
                         tipo_motor = "MOTOR DE ALTA EFICIENCIA" if int(info_dado["valor"]) == 1 else "MOTOR DE BAIXA EFICIENCIA" if int(info_dado["valor"]) == 2 else "MOTOR DE BAIXA EFICIENCIA"
@@ -344,6 +344,10 @@ class MyWidget(BoxLayout):
                     case "torque_mot":
                         torque = float(self.__modbusDataTable["torque_mot"]["valor"])
                         self.ids.bar_torque.value = (torque / 1) * 100
+                        continue
+                    case "carga_est":
+                        carga = float(self.__modbusDataTable["carga_est"]["valor"])
+                        self.ids.bar_carga.value = (carga / 200) * 100
                         continue
                     case _:
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]

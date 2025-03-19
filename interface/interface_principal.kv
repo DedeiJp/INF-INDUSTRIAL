@@ -165,31 +165,43 @@
                 on_release:
                     root._correnteModal.open()
 
-            MDIconButton:
+            MDButton:
                 id: bt_torque
                 disabled: True
-                icon: "alpha-t-box-outline"
-                style: "tonal"
-                theme_icon_color: "Custom"
+                disabled_color: "white"
+                pos_hint: {"center_x": 0.09, "center_y": 0.50}
+                style: "elevated"
                 theme_bg_color: "Custom"
-                icon_color: "white"
-                pos_hint: {"center_x": 0.04, "center_y": 0.40}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
                     root._graphtor.open()
+                MDButtonIcon:
+                    icon: "alpha-t-box-outline"
+                    theme_icon_color: "Custom"
+                    icon_color: "white"
+                MDButtonText:
+                    theme_text_color: "Custom"
+                    text_color: "white"
+                    text: "Torque"
 
-            MDIconButton:
+            MDButton:
                 id: bt_rpm
                 disabled: True
-                icon: "reload"
-                style: "tonal"
-                theme_icon_color: "Custom"
+                disabled_color: "white"
+                pos_hint: {"center_x": 0.255, "center_y": 0.50}
+                style: "elevated"
                 theme_bg_color: "Custom"
-                icon_color: "white"
-                pos_hint: {"center_x": 0.112, "center_y": 0.40}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
                     root._graphrpm.open()
+                MDButtonIcon:
+                    icon: "reload"
+                    theme_icon_color: "Custom"
+                    icon_color: "white"
+                MDButtonText:
+                    theme_text_color: "Custom"
+                    text_color: "white"
+                    text: "RPM"
 
             MDIconButton:
                 id: bt_velocidade
@@ -212,17 +224,18 @@
                 theme_icon_color: "Custom"
                 theme_bg_color: "Custom"
                 icon_color: "white"
-                pos_hint: {"center_x": 0.520, "center_y": 0.670}
+                pos_hint: {"center_x": 0.79, "center_y": 0.7}
                 md_bg_color: (175/255,184/255,199/255,255/255)
                 on_release:
                     root._graphcarg.open()
+
             
             Bar:
                 id: bar_torque
                 value: 0
                 orientation: 'bt' # horizontal bar
                 size_hint: (0.025, 0.4)
-                pos_hint: {"x": 0.027, "y": 0.450}
+                pos_hint: {"x": 0.080, "y": 0.550}
                 color: (82/255, 96/255, 122/255, 255/255)
                 background_color: (175/255,184/255,199/255,255/255)
             
@@ -231,7 +244,16 @@
                 value: 0
                 orientation: 'bt' # horizontal bar
                 size_hint: (0.025, 0.4)
-                pos_hint: {"x": 0.1, "y": 0.450}
+                pos_hint: {"x": 0.242, "y": 0.550}
+                color: (82/255, 96/255, 122/255, 255/255)
+                background_color: (175/255,184/255,199/255,255/255)
+
+            Bar:
+                id: bar_carga
+                value: 0
+                orientation: 'bt' # horizontal bar
+                size_hint: (0.025, 0.4)
+                pos_hint: {"x": 0.84, "y": 0.5}
                 color: (82/255, 96/255, 122/255, 255/255)
                 background_color: (175/255,184/255,199/255,255/255)
 
@@ -246,7 +268,7 @@
 
             MDLabel:
                 id: lb_status_mot
-                pos_hint: {"center_x": 0.68, "center_y": 0.4}
+                pos_hint: {"center_x": 0.508, "center_y": 0.4}
                 text: "DESLIGADO"
                 font_style: "Display"
                 role: "small"
