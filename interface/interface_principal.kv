@@ -204,6 +204,19 @@
                 on_release:
                     root._graphvel.open()
             
+            MDIconButton:
+                id: bt_peso
+                disabled: True
+                icon: "weight-kilogram"
+                style: "tonal"
+                theme_icon_color: "Custom"
+                theme_bg_color: "Custom"
+                icon_color: "white"
+                pos_hint: {"center_x": 0.520, "center_y": 0.670}
+                md_bg_color: (175/255,184/255,199/255,255/255)
+                on_release:
+                    root._graphvel.open()
+            
             Bar:
                 id: bar_torque
                 value: 0
