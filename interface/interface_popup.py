@@ -2,6 +2,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import LinePlot
+from timeseriesgraph import TimeSeriesGraph
 
 class ModbusConfig(Popup):
     """""
@@ -87,3 +88,20 @@ class ModalPID(Popup):
         Construtor da classe ModalTensao
         """
         super().__init__(**kwargs)
+
+class LabeledCheckBoxHistGraph(BoxLayout):
+    pass
+
+class HistGraphPopup(Popup):
+    """
+    Gráfico com dados históricos
+    """
+    def __init__(self,**kwargs):
+        super().__init__()
+        for key,value in kwargs.get('tags').items():
+            
+            cb = LabeledCheckBoxHistGraph()
+            cb.ids.label.text = key
+            cb.ids.label.color = value['color']
+            cb.id = key
+            self.ids.sensores.add_widget(cb)

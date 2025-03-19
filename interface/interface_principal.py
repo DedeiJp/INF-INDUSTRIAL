@@ -9,7 +9,13 @@ from time import sleep
 from threading import Thread, Lock
 import sys
 from kivy.garden import bar
-
+from interface.interface_popup import HistGraphPopup
+from timeseriesgraph import TimeSeriesGraph
+import random
+from db.bdhandler import BDHandler
+from datetime import datetime
+from db.bdhandler import BDHandler
+from kivy_garden.graph import LinePlot
 from kivymd.icon_definitions import md_icons
 from kivymd.uix.screen import MDScreen
 from kivymd.app import MDApp
@@ -45,7 +51,7 @@ class MyWidget(BoxLayout):
 
     _tipo_partida: int = 0
     
-    def __init__(self, **kwargs):
+    def __init__(self,db_path, **kwargs):
         """
         Construtor da interface pricipal
         """
@@ -111,6 +117,30 @@ class MyWidget(BoxLayout):
             "status_mot": { "addr": 1330, "float": False, "multiplicador": 1, "bit": 0, "valor": None, "unidade": "", "widget": self},
             "torque_mot": { "addr": 1420, "float": True, "multiplicador": 100, "valor": None, "unidade": "N*m", "widget": self}
         }
+
+        self._tags = {
+        key: None for key, value in self.__modbusDataTable.items()
+        if not value.get("ctrl", False)
+        }
+
+        #self._meas = {'timestamp': 'None', 'values': {}}
+
+        # Atualiza self._tags apenas com as variáveis de medição
+        for key in self._tags.keys():  # Itera apenas sobre as chaves filtradas
+            plot_color = (random.random(), random.random(), random.random(), 1)
+            self._tags[key] = {'addr': self.__modbusDataTable[key], 'color': plot_color}
+
+        # Inicializa o BDHandler com as tags filtradas
+        
+        self._filtered_tags = {
+            key: value for key, value in self._tags.items()
+            if key not in ["tipo_motor", "driver_partida", "status_mot"]
+        }
+        # Inicializa o BDHandler com as tags filtradas
+        self._db = BDHandler(db_path, self._filtered_tags)
+
+        # Cria o HistGraphPopup com as tags filtradas
+        self._hgraph = HistGraphPopup(tags=self._filtered_tags)
 
     def shutdown(self):
         self._shutdown_initiated = True
@@ -244,7 +274,8 @@ class MyWidget(BoxLayout):
         """
         Realiza leitura e atualização em memória dos dados buscado no servidor modbus
         """
-        for info_dado in self.__modbusDataTable.values():
+        dados = {}  # Dicionário para armazenar os valores coletados
+        for nome_variavel,info_dado in self.__modbusDataTable.items():
             is_ctrl_var = info_dado.get("ctrl") is not None
             if is_ctrl_var:
                 continue
@@ -255,6 +286,20 @@ class MyWidget(BoxLayout):
                 float if info_dado["float"] else int,\
                 info_dado["multiplicador"]\
             )
+            # Filtra as variáveis que não devem ser armazenadas no banco de dados
+            if nome_variavel in ["tipo_motor", "driver_partida", "status_mot"]:
+                continue
+            # Armazena no dicionário para inserção no banco de dados
+            dados[nome_variavel] = info_dado["valor"]
+        
+        # Insere os dados no banco de dados
+        if dados:
+            data_entry = {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "values": dados
+            }
+            print("Dados coletados:", data_entry)  # Para depuração
+            self._db.insertData(data_entry)  # Chama o método para inserir os dados
 
     def _update_ui(self):
         """
@@ -282,7 +327,7 @@ class MyWidget(BoxLayout):
                         continue
                     case "vel_est":
                         velocidade_esteira = float(self.__modbusDataTable["vel_est"]["valor"])
-                        self.ids.bar_velocidade.value = (velocidade_esteira / 100) * 100
+                        self.ids.bar_velocidade.value = (velocidade_esteira / 10) * 100
                         continue
                     case "rot_motor":
                         rpm = float(self.__modbusDataTable["rot_motor"]["valor"])
@@ -586,3 +631,106 @@ class MyWidget(BoxLayout):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 100
+
+    def getDataDB(self):
+        """ 
+        Método que coleta as informações da interface fornecidas pelo usuário 
+        e requisita a busca no BD 
+        """ 
+        try:
+            init_t = self.parseDTString(self._hgraph.ids.txt_init_time.text)
+            final_t = self.parseDTString(self._hgraph.ids.txt_final_time.text)
+            cols = []
+            for sensor in self._hgraph.ids.sensores.children:
+                if sensor.ids.checkbox.active:
+                    markedCheckbox=sensor.id
+                    cols.append(sensor.id) 
+                    if markedCheckbox == "tens_rs" or markedCheckbox == "tens_st" or markedCheckbox == "tens_tr":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [V]" 
+                    elif markedCheckbox == "temp_r" or markedCheckbox == "temp_s" or markedCheckbox == "temp_t" or markedCheckbox == "temp_carc":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [°C]"
+                    elif markedCheckbox == "pot_ativ_total" or markedCheckbox == "pot_ativ_r" or markedCheckbox == "pot_ativ_s" or markedCheckbox == "pot_ativ_t":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [W]"
+                    elif markedCheckbox == "torque_mot":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [Nm]"
+                    elif markedCheckbox == "rot_motor":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [RPM]"
+                    elif markedCheckbox == "vel_est":
+                        self._hgraph.ids.graph.ylabel=markedCheckbox + " [m/min]"
+                    else:
+                        self._hgraph.ids.graph.ylabel=markedCheckbox
+            if init_t is None or final_t is None or len(cols) == 0:
+                return
+            cols.append('timestamp')
+            dados = self._db.selectData(cols, init_t, final_t)
+            if dados is None or len(dados['timestamp']) == 0:
+                return
+            
+            # Limpa os plots existentes
+            self._hgraph.ids.graph.clearPlots()
+
+            # Encontra o valor máximo e mínimo entre todos os dados
+            max_value = max([max(dados[key]) for key in dados if key != 'timestamp'])
+            min_value = min([min(dados[key]) for key in dados if key != 'timestamp'])
+
+            # Verifica se ymax e ymin são iguais
+            if max_value == min_value:
+                # Adiciona um intervalo de segurança
+                max_value += 1  # Ajuste conforme necessário
+                min_value -= 1  # Ajuste conforme necessário
+            # Define o valor máximo e mínimo do eixo Y
+            self._hgraph.ids.graph.ymax = max_value * 1.2
+            if min_value < 0:
+                 self._hgraph.ids.graph.ymin = min_value * 1.2
+            else:
+                self._hgraph.ids.graph.ymin = min_value * 0.8
+            
+            # Calcula o intervalo adaptativo para as marcações do eixo Y
+            self._hgraph.ids.graph.y_ticks_major = self.calculate_adaptive_ticks(self._hgraph.ids.graph.ymax,self._hgraph.ids.graph.ymin)
+            # Adiciona os plots ao gráfico
+            for key, value in dados.items():
+                if key == 'timestamp':
+                    continue
+                p = LinePlot(line_width=1.5, color=self._tags[key]['color'])
+                p.points = [(x, value[x]) for x in range(0, len(value))]
+                self._hgraph.ids.graph.add_plot(p)
+
+            # Ajusta o eixo X
+            self._hgraph.ids.graph.xmax = len(dados[cols[0]])
+            self._hgraph.ids.graph.update_x_labels([datetime.strptime(x, "%Y-%m-%d %H:%M:%S") for x in dados['timestamp']])
+        
+        except Exception as e:
+            print("Error: ", e.args)
+
+    def parseDTString(self, datetime_str):
+        """
+        Método que converte a string inserida pelo usuário para um objeto datetime.
+        """
+        try:
+            # Converte a string para um objeto datetime
+            d = datetime.strptime(datetime_str, '%d/%m/%Y %H:%M:%S')
+            return d  # Retorna o objeto datetime
+        except Exception as e:
+            print("Error: ", e.args)
+            return None
+
+    def calculate_adaptive_ticks(self, ymax, ymin):
+        """
+        Método para calcular um intervalo adaptativo para as marcações do eixo Y.
+        :param ymax: Valor máximo do eixo Y.
+        :param ymin: Valor mínimo do eixo Y.
+        :return: Intervalo adaptativo para y_ticks_major.
+        """
+        # Calcula a faixa total do eixo Y
+        y_range = ymax - ymin
+
+        # Define uma lista de intervalos "agradáveis" para as marcações
+        nice_intervals = [0.001, 0.01, 0.1,0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+
+        # Encontra o intervalo mais adequado
+        for interval in nice_intervals:
+            if y_range / interval <= 10:  # Limita o número de marcações a um máximo de 10
+                return interval
+
+        # Caso o valor seja muito grande, retorna o último intervalo da lista
+        return nice_intervals[-1]
