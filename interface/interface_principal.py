@@ -8,7 +8,7 @@ from os import path
 from time import sleep
 from threading import Thread
 import sys
-# from kivy.garden.graph import BarPlot as Bar
+from kivy.garden import bar
 
 from kivymd.icon_definitions import md_icons
 from kivymd.uix.screen import MDScreen
@@ -223,8 +223,8 @@ class MyWidget(BoxLayout):
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
                         continue
                     case "tipo_motor":
-                        tipo_motor = "VERDE" if int(info_dado["valor"]) == 1 else "AZUL" if int(info_dado["valor"]) == 2 else None
-                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
+                        name_img_motor = "MODELO-VERGE.png" if int(info_dado["valor"]) == 1 else "MODELO-AZUL.png" if int(info_dado["valor"]) == 2 else "MODELO-VERDE.png"
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].source = f"img/model/{name_img_motor}"
                         continue
                     case "driver_partida":
                         driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
