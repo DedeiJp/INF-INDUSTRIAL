@@ -15,13 +15,12 @@ from kivymd.uix.screen import MDScreen
 from kivymd.app import MDApp
 from kivymd.uix.list import MDListItem
 
+from kivy.clock import mainthread
+
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from cliente_modbus.clientemodbus import ClienteMODBUS, TipoEndereco as addr
 
 class MyWidget(BoxLayout):
-    # TODO: Implementar lógica de status motor
-    # TODO: Implementar lógica de tipo de motor
-
     _ipConfigModal: Popup
     _modbusClient: ClienteMODBUS = None
     _modbusConnParams: dict = {
@@ -428,12 +427,12 @@ class MyWidget(BoxLayout):
                 self._modbusClient.escreveDado(\
                     addr.HOLDING_REGISTER,\
                     self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                    '0'\
                 )
                       
-
     def stop_motor(self):
         """
-        Inicia uma Thread secundário responsável por escrever nos registradores modbus adequados para que seja realizada a parada do motor
+        Inicia uma Thread secundária responsável por escrever nos registradores modbus adequados para que seja realizada a parada do motor
         """
         if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
             return
@@ -442,6 +441,43 @@ class MyWidget(BoxLayout):
         
         self._motor_actuator_register_write_thread.start()
 
+    def _reset_motor(self):
+        """
+        Escreve nos registradores modbus adequados para que seja realizado o reset do motor
+        """
+        with self._lock:
+            driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
+
+        match driver_partida:
+            case 0:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
+                    '2'\
+                )
+            case 1:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
+                    '2'\
+                )
+            case 2:
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
+                    '2'\
+                )
+
+    def reset_motor(self):
+        """
+        Inicia um Thread secundária responsável por escrever nos registradores modbus adequados para que seja realizado o reset do motor
+        """
+        if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
+            return
+        
+        self._motor_actuator_register_write_thread = Thread(target=self._reset_motor)
+
+        self._motor_actuator_register_write_thread.start()
     
     def _enable_buttons(self):
         self.ids.bt_temperatura.disabled = False
@@ -465,17 +501,20 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = True
         self.ids.bt_acionamento.disabled = True
 
+    @mainthread
     def __handle_client_connected(self):
         self.ids.lb_status_conected_text.text = "Cliente Conectado"
         self.ids.lb_status_conected_icon.icon = "lan-connect"
         self.ids.img_warnnig_conn.opacity = 0
-
+    
+    @mainthread
     def __handle_client_disconnected(self):
         self.ids.lb_status_conected_text.text = "Cliente Desconectado"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 0
-
-def __handle_client_lost_connection(self):
+    
+    @mainthread
+    def __handle_client_lost_connection(self):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 100
