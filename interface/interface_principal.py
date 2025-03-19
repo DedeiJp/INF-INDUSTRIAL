@@ -6,7 +6,7 @@ from kivy.config import Config
 from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente, ModalTemperatura, ModalPotencia, ModalAcionamento, ModalPID
 from os import path
 from time import sleep
-from threading import Thread
+from threading import Thread, Lock
 import sys
 from kivy.garden import bar
 
@@ -31,8 +31,12 @@ class MyWidget(BoxLayout):
     }
     __modbusDataTable: dict[dict[str, str|int]]
 
+    _lock: Lock = Lock()
+
     _motor_actuator_register_write_thread: Thread = None
     _motor_driver_type_register_write_thread: Thread = None
+
+    _modbus_connection_establishment_thread: Thread = None
 
     _data_ui_update_thread: Thread = None
     _enable_ui_update: bool = False
@@ -84,7 +88,7 @@ class MyWidget(BoxLayout):
             "pot_apar_t": { "addr": 862, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA", "widget": self._potenciaModal},
             "pot_apar_total": { "addr": 863, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA", "widget": self._potenciaModal},
             "rot_motor": { "addr": 884, "float": True, "multiplicador": 1, "valor": None, "unidade": "RPM", "widget": self},
-            "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": 0, "unidade": "", "widget": self}, # TODO: Mudar pra self._comandoModal
+            "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": 0, "unidade": "", "widget": self._acionamentoModal}, # TODO: Mudar pra self._comandoModal
             "ctrl_partida_inv": { "addr": 1312, "float": False, "multiplicador": 1, "valor": None, "ctrl": True}, # TODO: Definir valor inicial das variáveis de controle
             "freq_partida_inv": { "addr": 1313, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
             "tempo_rampa_partida_inv": { "addr": 1314, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
@@ -109,64 +113,93 @@ class MyWidget(BoxLayout):
         self.clear_widgets()
     
     def set_modbus_scan_time(self, scan_time: int):
-        print("Definindo intervalo de atualização de dados modbus e UI")
-        self._modbusConnParams["scan_time"] = scan_time / 1000
+        with self._lock:
+            print("Definindo intervalo de atualização de dados modbus e UI")
+            self._modbusConnParams["scan_time"] = scan_time / 1000
 
-    def set_modbus_conn_params(self, host: str, port: int, scan_time: int = 1):
+    def set_modbus_conn_params(self, host: str, port: int):
         """
         Define os parâmetros de conexão ao servidor modbus
         """
         if type(host) is str and type(port) is int:
-            self._modbusConnParams['host'] = host
-            self._modbusConnParams['port'] = port
+            with self._lock:
+                self._modbusConnParams['host'] = host
+                self._modbusConnParams['port'] = port
+        else:
+            print("Erro: parâmetros de conexão com formato inválido")
+            return
 
-    def create_modbus_connection(self, host: str, port: int, scantime: int = 1000):
+    def _create_modbus_connection(self, host: str, port: int, scantime: int = 1000):
         """
         Cria a conexão do cliente com o servidor modbus
         """
         if type(host) is str and type(port) is int:
-            self._modbusConnParams['host'] = host
-            self._modbusConnParams['port'] = port
+            self.set_modbus_conn_params(host, port)
             self.set_modbus_scan_time(scantime)
         else:
             print("Erro: parâmetros de conexão com formato inválido")
             return
 
-        if self._modbusClient and self._modbusClient.is_connected():
-            self.close_modbus_connection()
-            # del self._modbusClient
+        with self._lock:
+            if self._modbusClient and self._modbusClient.is_connected():
+                self.close_modbus_connection()
+                # del self._modbusClient
 
-        self._modbusClient = ClienteMODBUS(\
-            self._modbusConnParams['host'],\
-            self._modbusConnParams['port'],\
-            self._modbusConnParams['scan_time']
-        )
+            self._modbusClient = ClienteMODBUS(\
+                self._modbusConnParams['host'],\
+                self._modbusConnParams['port'],\
+                self._modbusConnParams['scan_time']
+            )
 
-        print("Criando conexão com servidor modbus:", self._modbusConnParams)
-        connected = self._modbusClient.connect()
+            print("Criando conexão com servidor modbus:", self._modbusConnParams)
+            connected = self._modbusClient.connect()
 
-        if connected:
+            if connected:
+                # Habilitação dos botões
+                self._enable_buttons()
+                # Mudança de Status
+                self.__handle_client_connected()
 
-            # Habilitação dos botões
-            self.activate_buttons()
+                print("Conexão estabelecida com sucesso")
+                self._enable_ui_update = True
+                self.__start_update_thread()
+
+    
+    def create_modbus_connection(self, host: str, port: int, scantime: int = 1000):
+        """
+        Inicia uma Thread secundária responsável por iniciar a conexão do cliente com o servidor modbus
+        """
+        if self._modbus_connection_establishment_thread and self._modbus_connection_establishment_thread.is_alive():
+            return
+
+        self._modbus_connection_establishment_thread = Thread(target=self._create_modbus_connection, args=(host, port, scantime))
+        self._modbus_connection_establishment_thread.start()
+
+    def _close_modbus_connection(self):
+        """
+        Encerra a conexão do cliente com o servidor modbus
+        """
+        with self._lock:
+            print("Fechando conexão com servidor modbus")
+            if not self._modbusClient: return
+
+            self._modbusClient.close()
+            self._enable_ui_update = False
+
+            # Desabilitação dos botões
+            self._disable_buttons()
             # Mudança de Status
-            self.interface_conectado()
-
-            print("Conexão estabelecida com sucesso")
-            self._enable_ui_update = True
-            self.__start_update_thread()
+            self.__handle_client_disconnected()
 
     def close_modbus_connection(self):
-        print("Fechando conexão com servidor modbus")
-        if not self._modbusClient: return
-
-        self._modbusClient.close()
-        self._enable_ui_update = False
-
-        # Desabilitação dos botões
-        self.disable_buttons()
-        # Mudança de Status
-        self.interface_desconectado()
+        """
+        Inicia uma Thread secundária responsável por encerrar a conexão do cliente com o servidor modbus
+        """
+        if self._modbus_connection_establishment_thread and self._modbus_connection_establishment_thread.is_alive():
+            return
+        
+        self._modbus_connection_establishment_thread = Thread(target=self._close_modbus_connection)
+        self._modbus_connection_establishment_thread.start()
 
     def __start_update_thread(self):
         """
@@ -197,9 +230,9 @@ class MyWidget(BoxLayout):
                     print("Erro ao atualizar dados e interface: ", e.args)
 
                     # Desabilitação dos Botões
-                    self.disable_buttons()
+                    self._disable_buttons()
                     # Mudança de Status com Erro
-                    self.interface_conec_lost()
+                    self.__handle_client_lost_connection()
 
     def _update_data(self):
         """
@@ -221,7 +254,6 @@ class MyWidget(BoxLayout):
         """
         Atualiza a UI com os dados oriundos da tabela modbus
         """
-        self.update_bars()
 
         for nome_dado, info_dado in self.__modbusDataTable.items():
             try:
@@ -237,34 +269,25 @@ class MyWidget(BoxLayout):
                     case "tipo_motor":
                         tipo_motor = "MOTOR DE ALTA EFICIENCIA" if int(info_dado["valor"]) == 1 else "MOTOR DE BAIXA EFICIENCIA" if int(info_dado["valor"]) == 2 else "MOTOR DE BAIXA EFICIENCIA"
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
-                        # print(tipo_motor)
-                        # print(info_dado["valor"])
-                        # print("\n\n\n\n\n")
-                        # continue
+                        continue
                     case "driver_partida":
                         driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
-                        
+                        continue
+                    case "vel_est":
+                        velocidade_esteira = float(self.__modbusDataTable["vel_est"]["valor"])
+                        self.ids.bar_velocidade.value = (velocidade_esteira / 100) * 100
+                        continue
+                    case "rot_motor":
+                        rpm = float(self.__modbusDataTable["rot_motor"]["valor"])
+                        self.ids.bar_rpm.value = (rpm / 2000) * 100
+                        continue
+                    case "torque_mot":
+                        torque = float(self.__modbusDataTable["torque_mot"]["valor"])
+                        self.ids.bar_torque.value = (torque / 1) * 100
+                        continue
                     case _:
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
-                # if nome_dado == "status_mot":
-                #     bit_0 = info_dado["valor"] & 1
-                #     # TODO: Implementar lógica
-                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
-                #     continue
-
-                # if nome_dado == "tipo_motor":
-                #     tipo_motor = "VERDE" if info_dado["valor"] == 1 else "AZUL" if info_dado["valor"] == 2 else None
-                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
-                #     continue
-
-                # if nome_dado == "driver_partida":
-                #     driver_partida = "DIRETA" if info_dado["valor"] == 0 else "SOFT-START" if info_dado["valor"] == 1 else "INVERSOR" if info_dado["valor"] == 2 else None
-                #     info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
-                #     continue
-                
-
-                # info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
                 
             except KeyError as ke:
                 print("Label inexistente: ", ke.args)
@@ -273,17 +296,17 @@ class MyWidget(BoxLayout):
         """
         Define o tipo de partida do motor
         """
-        if (self._motor_driver_type_register_write_thread.is_alive()):
-            self._motor_driver_type_register_write_thread.join(timeout=10)
+        if (self._motor_driver_type_register_write_thread and self._motor_driver_type_register_write_thread.is_alive()):
+            return
 
         if tipo_partida >= 0 and tipo_partida <= 2:
-            self.__modbusDataTable["driver_partida"]["valor"] = tipo_partida
+            self.__modbusDataTable["ctrl_driver_partida"]["valor"] = tipo_partida
 
-            self._motor_driver_type_register_write_thread = Thread(lambda:\
+            self._motor_driver_type_register_write_thread = Thread(target = lambda:\
                 self._modbusClient.escreveDado(\
                 addr.HOLDING_REGISTER,\
-                self.__modbusDataTable["driver_partida"]["addr"],\
-                self.__modbusDataTable["driver_partida"]["valor"]\
+                self.__modbusDataTable["ctrl_driver_partida"]["addr"],\
+                str(self.__modbusDataTable["ctrl_driver_partida"]["valor"])\
             ))
             self._motor_driver_type_register_write_thread.start()
 
@@ -352,7 +375,7 @@ class MyWidget(BoxLayout):
         self._motor_actuator_register_write_thread.start()
 
     
-    def activate_buttons(self):
+    def _enable_buttons(self):
         self.ids.bt_temperatura.disabled = False
         self.ids.bt_potencia.disabled = False
         self.ids.bt_tensao.disabled = False
@@ -363,7 +386,7 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = False
         self.ids.bt_acionamento.disabled = False
 
-    def disable_buttons(self):
+    def _disable_buttons(self):
         self.ids.bt_temperatura.disabled = True
         self.ids.bt_potencia.disabled = True
         self.ids.bt_tensao.disabled = True
@@ -374,24 +397,17 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = True
         self.ids.bt_acionamento.disabled = True
 
-    def interface_conectado(self):
+    def __handle_client_connected(self):
         self.ids.lb_status_conected_text.text = "Cliente Conectado"
         self.ids.lb_status_conected_icon.icon = "lan-connect"
         self.ids.img_warnnig_conn.opacity = 0
-    def interface_desconectado(self):
+
+    def __handle_client_disconnected(self):
         self.ids.lb_status_conected_text.text = "Cliente Desconectado"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 0
-    def interface_conec_lost(self):
+
+def __handle_client_lost_connection(self):
         self.ids.lb_status_conected_text.text = "Conexão Perdida"
         self.ids.lb_status_conected_icon.icon = "lan-disconnect"
         self.ids.img_warnnig_conn.opacity = 100
-
-    def update_bars(self):
-        rpm = (self.__modbusDataTable["rot_motor"]["valor"])
-        torque = (self.__modbusDataTable["torque_mot"]["valor"])
-        velocidade = (self.__modbusDataTable["vel_est"]["valor"])
-
-        self.ids.bar_torque.value = (torque / 1) * 100
-        self.ids.bar_rpm.value = (rpm / 2000) * 100
-        self.ids.bar_velocidade.value = (velocidade / 100) * 100
