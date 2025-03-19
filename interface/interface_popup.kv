@@ -313,6 +313,7 @@
                     halign: 'center'
                     input_filter: "int"
                     multiline: False
+                    text: str(10)
                 Label:
                     text: "Desaceleração [s]"
                 TextInput:
@@ -320,6 +321,7 @@
                     halign: 'center'
                     input_filter: "int"
                     multiline: False
+                    text: str(10)
             BoxLayout:
                 size_hint: (1, 0.6)
                 orientation: 'vertical'
@@ -334,8 +336,8 @@
                     min: 0
                     max: 60
                     step: 1
+                    value: 60
                     orientation: 'horizontal'
-
 
 <ModalPID>
     title: "Controle de PID"
@@ -358,33 +360,38 @@
             TextInput:
                 id: input_pid_p
                 halign: 'center'
-                input_filter: "int"
+                input_filter: "float"
                 multiline: False
+                text: str(10)
             Label:
                 text: "Set Point PID (SP)"
             TextInput:
                 id: input_pid_sp
                 halign: 'center'
-                input_filter: "int"
+                input_filter: "float"
                 multiline: False
+                text: str(30)
             Label:
                 text: "I"
             TextInput:
                 id: input_pid_i
                 halign: 'center'
-                input_filter: "int"
+                input_filter: "float"
                 multiline: False
+                text: str(0.2)
             Label:
                 text: "Variável Manipulada (MV)"
             TextInput:
                 id: input_pid_mv
                 halign: 'center'
-                input_filter: "int"
+                input_filter: "float"
                 multiline: False
+                text: str(30)
             Label:
                 text: "D"
             TextInput:
                 id: input_pid_d
                 halign: 'center'
-                input_filter: "int"
+                input_filter: "float"
                 multiline: False
+                text: str(1)
