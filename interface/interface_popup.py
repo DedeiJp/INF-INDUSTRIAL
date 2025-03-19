@@ -123,7 +123,7 @@ class DataGraphPopupVEL(Popup):
         self.ids.graphvel.add_plot(self.plot)
         self.ids.graphvel.xmax = xmax
 
-class LabeledCheckBoxGraphTOR(BoxLayout):
+class LabeledCheckBoxGraphVEL(BoxLayout):
     pass
 
 class DataGraphPopupTOR(Popup):
