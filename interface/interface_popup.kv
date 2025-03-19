@@ -345,53 +345,61 @@
     size_hint_y: 0.3
     height: 600
     BoxLayout:
-        orientation: 'horizontal'
-        GridLayout:
-            size_hint: (0.35, 1)
-            cols: 4
-            rows: 3
-            Label:
-                text: "PID Automatico?"
-            CheckBox:
-                id: input_pid_automatico
-                active: True
-            Label:
-                text: "P"
-            TextInput:
-                id: input_pid_p
-                halign: 'center'
-                input_filter: "float"
-                multiline: False
-                text: str(10)
-            Label:
-                text: "Set Point PID (SP)"
-            TextInput:
-                id: input_pid_sp
-                halign: 'center'
-                input_filter: "float"
-                multiline: False
-                text: str(30)
-            Label:
-                text: "I"
-            TextInput:
-                id: input_pid_i
-                halign: 'center'
-                input_filter: "float"
-                multiline: False
-                text: str(0.2)
-            Label:
-                text: "Variável Manipulada (MV)"
-            TextInput:
-                id: input_pid_mv
-                halign: 'center'
-                input_filter: "float"
-                multiline: False
-                text: str(30)
-            Label:
-                text: "D"
-            TextInput:
-                id: input_pid_d
-                halign: 'center'
-                input_filter: "float"
-                multiline: False
-                text: str(1)
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            GridLayout:
+                size_hint: (0.35, 1)
+                cols: 4
+                rows: 3
+                Label:
+                    text: "PID Automatico?"
+                CheckBox:
+                    id: input_pid_automatico
+                    active: True
+                Label:
+                    text: "P"
+                TextInput:
+                    id: input_pid_p
+                    halign: 'center'
+                    input_filter: "float"
+                    multiline: False
+                    text: str(10)
+                Label:
+                    text: "Set Point PID (SP)"
+                TextInput:
+                    id: input_pid_sp
+                    halign: 'center'
+                    input_filter: "float"
+                    multiline: False
+                    text: str(30)
+                Label:
+                    text: "I"
+                TextInput:
+                    id: input_pid_i
+                    halign: 'center'
+                    input_filter: "float"
+                    multiline: False
+                    text: str(0.2)
+                Label:
+                    text: "Variável Manipulada (MV)"
+                TextInput:
+                    id: input_pid_mv
+                    halign: 'center'
+                    input_filter: "float"
+                    multiline: False
+                    text: str(30)
+                Label:
+                    text: "D"
+                TextInput:
+                    id: input_pid_d
+                    halign: 'center'
+                    input_filter: "float"
+                    multiline: False
+                    text: str(1)
+        BoxLayout:
+            size_hint: (1, 0.2)
+            Button:
+                id: bt_pid_atualizar
+                text: "Atualizar Dados de PID"
+
