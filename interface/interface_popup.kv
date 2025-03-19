@@ -41,7 +41,7 @@
                 height: 10
                 id: bt_modbusconfig_md_conectar
                 text: "Conectar"
-                on_release: app.root.create_modbus_connection(str(input_ip.text), int(input_porta.text))
+                on_release: app.root.create_modbus_connection(str(input_ip.text), int(input_porta.text), int(input_scantime.text))
             Button:
                 height: 10
                 id: bt_modbusconfig_md_desconectar

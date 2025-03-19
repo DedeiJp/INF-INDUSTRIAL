@@ -83,7 +83,7 @@ class MyWidget(BoxLayout):
             "pot_apar_t": { "addr": 862, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA", "widget": self._potenciaModal},
             "pot_apar_total": { "addr": 863, "float": False, "multiplicador": 1, "valor": None, "unidade": "VA", "widget": self._potenciaModal},
             "rot_motor": { "addr": 884, "float": True, "multiplicador": 1, "valor": None, "unidade": "RPM", "widget": self},
-            "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": None, "unidade": "", "widget": self}, # TODO: Mudar pra self._comandoModal
+            "driver_partida": { "addr": 1216, "float": False, "multiplicador": 1, "valor": 0, "unidade": "", "widget": self}, # TODO: Mudar pra self._comandoModal
             "ctrl_partida_inv": { "addr": 1312, "float": False, "multiplicador": 1, "valor": None, "ctrl": True}, # TODO: Definir valor inicial das variáveis de controle
             "freq_partida_inv": { "addr": 1313, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
             "tempo_rampa_partida_inv": { "addr": 1314, "float": False, "multiplicador": 10, "valor": None, "ctrl": True},
@@ -119,13 +119,14 @@ class MyWidget(BoxLayout):
             self._modbusConnParams['host'] = host
             self._modbusConnParams['port'] = port
 
-    def create_modbus_connection(self, host: str, port: int):
+    def create_modbus_connection(self, host: str, port: int, scantime: int = 1000):
         """
         Cria a conexão do cliente com o servidor modbus
         """
         if type(host) is str and type(port) is int:
             self._modbusConnParams['host'] = host
             self._modbusConnParams['port'] = port
+            self.set_modbus_scan_time(scantime)
         else:
             print("Erro: parâmetros de conexão com formato inválido")
             return
@@ -156,6 +157,8 @@ class MyWidget(BoxLayout):
 
     def close_modbus_connection(self):
         print("Fechando conexão com servidor modbus")
+        if not self._modbusClient: return
+
         self._modbusClient.close()
         self._enable_ui_update = False
 
@@ -169,7 +172,7 @@ class MyWidget(BoxLayout):
         Inicializa a thread de leitura de dados e atualização de interface
         """
         print("Inicializando thread de atualização de dados e UI...")
-        if not self._data_ui_update_thread:
+        if not self._data_ui_update_thread or not self._data_ui_update_thread.is_alive():
             self._data_ui_update_thread = Thread(target=self._update_data_and_ui)
             self._data_ui_update_thread.start()
             
@@ -181,11 +184,12 @@ class MyWidget(BoxLayout):
         """
         while not self._shutdown_initiated:
             try:
-                while self._enable_ui_update:
+                while self._enable_ui_update and self._modbusClient.is_connected():
                     print("Atualizando dados...")
                     self._update_data()
                     self._update_ui()
                     sleep(self._modbusConnParams["scan_time"])
+                break # Encerra o loop da thread para que ela morra caso ocorra exceção
             except Exception as e:
                 if not self._shutdown_initiated:
                     self.close_modbus_connection()
@@ -204,7 +208,6 @@ class MyWidget(BoxLayout):
             is_ctrl_var = info_dado.get("ctrl") is not None
             if is_ctrl_var:
                 continue
-
             
             info_dado["valor"] = self._modbusClient.lerDado(\
                 addr.HOLDING_REGISTER,\
@@ -286,30 +289,30 @@ class MyWidget(BoxLayout):
         """
         Inicia o motor
         """
-        if (self._motor_actuator_register_write_thread.is_alive()):
-            self._motor_actuator_register_write_thread.join(timeout=10)
+        if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
+            return
 
         match self.__modbusDataTable["driver_partida"]["valor"]:
             case 0:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
-                        1\
+                        '1'\
                 ))
             case 1:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
-                        1\
+                        '1'\
                 ))
             case 2:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
-                        1\
+                        '1'\
                 ))
 
         self._motor_actuator_register_write_thread.start()
@@ -318,30 +321,30 @@ class MyWidget(BoxLayout):
         """
         Para o motor
         """
-        if (self._motor_actuator_register_write_thread.is_alive()):
-            self._motor_actuator_register_write_thread.join(timeout=10)
+        if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
+            return
 
         match self.__modbusDataTable["driver_partida"]["valor"]:
             case 0:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
-                        0\
+                        '0'\
                 ))
             case 1:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
-                        0\
+                        '0'\
                 ))
             case 2:
-                self._motor_actuator_register_write_thread = Thread(lambda:\
+                self._motor_actuator_register_write_thread = Thread(target=lambda:\
                     self._modbusClient.escreveDado(\
                         addr.HOLDING_REGISTER,\
                         self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
-                        0\
+                        '0'\
                 ))
         
         self._motor_actuator_register_write_thread.start()
