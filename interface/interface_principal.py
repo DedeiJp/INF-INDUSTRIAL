@@ -318,7 +318,7 @@ class MyWidget(BoxLayout):
 
         self._motor_driver_type_register_write_thread.start()
 
-    def _start_motor(self):
+    def _start_motor(self, acc: int, desacc: int, freq: int):
         """
         Escreve nos registradores modbus adequados para que seja realizada a partida do motor
         """
@@ -335,24 +335,72 @@ class MyWidget(BoxLayout):
             case 1:
                 self._modbusClient.escreveDado(\
                     addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_partida_soft"]["addr"],\
+                    str(acc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_desacc_soft"]["addr"],\
+                    str(desacc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
                     self.__modbusDataTable["ctrl_partida_soft"]["addr"],\
                     '1'\
                 )
             case 2:
                 self._modbusClient.escreveDado(\
                     addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["freq_partida_inv"]["addr"],\
+                    str(freq)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_partida_inv"]["addr"],\
+                    str(acc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
+                    self.__modbusDataTable["tempo_rampa_desacc_inv"]["addr"],\
+                    str(desacc)\
+                )
+
+                self._modbusClient.escreveDado(\
+                    addr.HOLDING_REGISTER,\
                     self.__modbusDataTable["ctrl_partida_inv"]["addr"],\
                     '1'\
                 )
 
-    def start_motor(self):
+    def start_motor(self, acc: int, desacc: int, freq: int):
         """
         Inicia uma Thread secundário responsável por escrever nos registradores modbus adequados para que seja realizado a partida do motor
         """
         if (self._motor_actuator_register_write_thread and self._motor_actuator_register_write_thread.is_alive()):
             return
+        
+        try:
+            acc = int(acc)
+            desacc = int(desacc)
+            freq = int(freq)
+        except ValueError as ve:
+            print("É preciso definir os valores de aceleração e desaceleração para realizar a partida do motor")
+            return
+        
 
-        self._motor_actuator_register_write_thread = Thread(target=self._start_motor)
+        if acc < 10 or desacc < 10 or freq < 0:
+            acc = 10
+            desacc = 10
+            freq = 0
+        elif acc > 60 or desacc > 60 or freq > 60:
+            acc = 60
+            desacc = 60
+            freq = 60
+
+        self._motor_actuator_register_write_thread = Thread(target=self._start_motor, args=(acc, desacc, freq,))
 
         self._motor_actuator_register_write_thread.start()
 
