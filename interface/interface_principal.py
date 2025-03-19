@@ -233,16 +233,17 @@ class MyWidget(BoxLayout):
                         bit_0 = int(info_dado["valor"]) & 1
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = "LIGADO" if bit_0 else "DESLIGADO"
                         continue
-                    # case "tipo_motor":
-                        # TODO: Fazer funcionar
-                        # self._motor_img_opacity = 0 if int(info_dado["valor"]) == 1 else 100 if int(info_dado["valor"]) == 2 else 0
-                        # print(self._motor_img_opacity)
+                    case "tipo_motor":
+                        tipo_motor = "MOTOR DE ALTA EFICIENCIA" if int(info_dado["valor"]) == 1 else "MOTOR DE BAIXA EFICIENCIA" if int(info_dado["valor"]) == 2 else "MOTOR DE BAIXA EFICIENCIA"
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
+                        # print(tipo_motor)
+                        # print(info_dado["valor"])
                         # print("\n\n\n\n\n")
                         # continue
                     case "driver_partida":
                         driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
-                        continue
+                        
                     case _:
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
                 # if nome_dado == "status_mot":
