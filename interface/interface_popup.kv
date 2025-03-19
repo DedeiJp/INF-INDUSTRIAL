@@ -257,8 +257,8 @@
 
 <ModalAcionamento>
     title: "Acionamento do Motor"
-    size_hint_x: 0.8
-    size_hint_y: 0.8
+    size_hint_x: 0.6
+    size_hint_y: 0.3
     height: 600
     BoxLayout:
         orientation: 'horizontal'
@@ -296,9 +296,9 @@
             orientation: "vertical"
             size_hint: (0.35, 1)
             Label:
-                size_hint: (1, 0.2)
+                size_hint: (1, 0.3)
                 id: lb_acionameto_selecionado
-                text: "Escolaha um tipo de Partida..."
+                text: "Escolha um tipo de Partida..."
             GridLayout:
                 cols: 2
                 rows: 2
@@ -317,15 +317,13 @@
                     input_filter: "int"
                     multiline: False
             BoxLayout:
+                size_hint: (1, 0.6)
                 orientation: 'vertical'
+                Label:
+                    text: str(slider_freq.value)
                 Slider:
                     id: slider_freq
                     min: 0
                     max: 60
                     step: 1
                     orientation: 'horizontal'
-
-                Label:
-                    text: str(slider_freq.value)
-
-                

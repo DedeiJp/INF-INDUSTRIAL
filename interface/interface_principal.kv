@@ -231,6 +231,21 @@
                 color: (82/255, 96/255, 122/255, 255/255)
                 background_color: (175/255,184/255,199/255,255/255)
 
+            MDLabel:
+                id: lb_status_mot
+                pos_hint: {"center_x": 0.68, "center_y": 0.4}
+                text: "DESLIGADO"
+                font_style: "Display"
+                role: "small"
+
+            MDLabel:
+                id: lb_tipo_mot
+                pos_hint: {"center_x": 0.68, "center_y": 0.1}
+                text: "MOTOR DE ALTA EFICIENCIA"
+                font_style: "Display"
+                role: "small"
+            
+
         FloatLayout:      
             size_hint: (0.45, 1)
             canvas:
