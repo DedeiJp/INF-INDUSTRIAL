@@ -285,6 +285,9 @@
                 radius: [self.height / 2, ]
                 size_hint: None, None
                 size: "100dp", "100dp"
+                on_release:
+                    root._pidModal.open()   
+
 
             MDIconButton:
                 id: bt_acionamento

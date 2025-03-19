@@ -75,3 +75,15 @@ class ModalAcionamento(Popup):
         Construtor da classe ModalTensao
         """
         super().__init__(**kwargs)
+
+
+class ModalPID(Popup):
+    """""
+    Popup da do Modal de Tensao
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalTensao
+        """
+        super().__init__(**kwargs)
