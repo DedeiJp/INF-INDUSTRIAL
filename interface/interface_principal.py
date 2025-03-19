@@ -35,6 +35,8 @@ class MyWidget(BoxLayout):
     _motor_actuator_register_write_thread: Thread = None
     _motor_driver_type_register_write_thread: Thread = None
 
+    _PID_parameters_write_thread: Thread = None
+
     _modbus_connection_establishment_thread: Thread = None
 
     _data_ui_update_thread: Thread = None
@@ -97,7 +99,12 @@ class MyWidget(BoxLayout):
             "tempo_rampa_desacc_soft": { "addr": 1318, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
             "ctrl_partida_dir": { "addr": 1319, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
             "ctrl_driver_partida": { "addr": 1324, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
-            "ctrl_tipo_pid": { "addr": 1332, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
+            "ctrl_tipo_pid": { "addr": 1332, "float": False, "multiplicador": 1, "valor": None, "ctrl": True}, # Se é automático ou manual
+            "ctrl_sp_pid": { "addr": 1302, "float": True, "multiplicador": 1, "valor": None, "ctrl": True},
+            "ctrl_P_pid": { "addr": 1304, "float": True, "multiplicador": 1, "valor": None, "ctrl": True},
+            "ctrl_I_pid": { "addr": 1306, "float": True, "multiplicador": 1, "valor": None, "ctrl": True},
+            "ctrl_D_pid": { "addr": 1308, "float": True, "multiplicador": 1, "valor": None, "ctrl": True},
+            "ctrl_mv_pid": { "addr": 1310, "float": True, "multiplicador": 1, "valor": None, "ctrl": True},
             "energ_ativ": { "addr": 1210, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
             "energ_reativ": { "addr": 1212, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
             "energ_apar": { "addr": 1214, "float": False, "multiplicador": 1, "valor": None, "ctrl": True},
@@ -478,7 +485,67 @@ class MyWidget(BoxLayout):
         self._motor_actuator_register_write_thread = Thread(target=self._reset_motor)
 
         self._motor_actuator_register_write_thread.start()
+
+    def _set_pid_parameters(self, auto: bool, sp: float, mv: float, P: float, I: float, D: float):
+        """
+        Escreve nos registradores modbus adequados para atualizar os valores de parâmetros PID da carga
+        """
+        with self._lock:
+            self.__modbusDataTable["ctrl_tipo_pid"]["valor"] = 1 if auto else 0
+            self.__modbusDataTable["ctrl_sp_pid"]["valor"] = sp
+            self.__modbusDataTable["ctrl_mv_pid"]["valor"] = mv
+            self.__modbusDataTable["ctrl_P_pid"]["valor"] = P
+            self.__modbusDataTable["ctrl_I_pid"]["valor"] = I
+            self.__modbusDataTable["ctrl_D_pid"]["valor"] = D
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_tipo_pid"]["addr"],\
+            str(1 if auto else 0)\
+        )
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_sp_pid"]["addr"],\
+            str(sp)\
+        )
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_mv_pid"]["addr"],\
+            str(mv)\
+        )
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_P_pid"]["addr"],\
+            str(P)\
+        )
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_I_pid"]["addr"],\
+            str(I)\
+        )
+
+        self._modbusClient.escreveDado(\
+            addr.HOLDING_REGISTER,\
+            self.__modbusDataTable["ctrl_D_pid"]["addr"],\
+            str(D)\
+        )
+
+    def set_pid_parameters(self, auto: bool, sp: float, mv: float, P: float, I: float, D: float):
+        """
+        Inicia uma Thread secundária responsável por escrever nos registradores modbus adequados para atualizar os valores de parâmetros PID da carga
+        """
+        if self._PID_parameters_write_thread and self._PID_parameters_write_thread.is_alive():
+            return
+
+        self._PID_parameters_write_thread = Thread(target=self._set_pid_parameters, args=(auto, sp, mv, P, I, D))
+
+        self._PID_parameters_write_thread.start()
     
+    @mainthread
     def _enable_buttons(self):
         self.ids.bt_temperatura.disabled = False
         self.ids.bt_potencia.disabled = False
@@ -490,6 +557,7 @@ class MyWidget(BoxLayout):
         self.ids.bt_pid.disabled = False
         self.ids.bt_acionamento.disabled = False
 
+    @mainthread
     def _disable_buttons(self):
         self.ids.bt_temperatura.disabled = True
         self.ids.bt_potencia.disabled = True
