@@ -65,3 +65,13 @@ class ModalTemperatura(Popup):
         super().__init__(**kwargs)
 
 
+class ModalAcionamento(Popup):
+    """""
+    Popup da do Modal de Tensao
+    """
+
+    def __init__(self, **kwargs):
+        """"
+        Construtor da classe ModalTensao
+        """
+        super().__init__(**kwargs)
