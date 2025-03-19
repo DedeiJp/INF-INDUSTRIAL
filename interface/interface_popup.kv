@@ -317,6 +317,16 @@
                     halign: 'center'
                     input_filter: "int"
                     multiline: False
-            FloatLayout:
+            BoxLayout:
+                orientation: 'vertical'
+                Slider:
+                    id: slider_freq
+                    min: 0
+                    max: 60
+                    step: 1
+                    orientation: 'horizontal'
+
+                Label:
+                    text: str(slider_freq.value)
 
                 
