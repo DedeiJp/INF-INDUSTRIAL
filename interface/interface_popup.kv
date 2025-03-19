@@ -281,11 +281,42 @@
             Button:
                 id: bt_partida_direta
                 text: "TESYS DIRETA"
+                on_release:
+                    lb_acionameto_selecionado.text = "Partida Direta Selecionada"
             Button:
                 id: bt_partida_inversor
                 text: "ATV31 INVERSOR"
+                on_release:
+                    lb_acionameto_selecionado.text = "Partida com Inversor Selecionada"
             Button:
                 id: bt_partida_soft
                 text: "ATS58 SOFT-START"
-        FloatLayout:
+                on_release:
+                    lb_acionameto_selecionado.text = "Partida com Soft-Start Selecionada"
+        BoxLayout:
+            orientation: "vertical"
             size_hint: (0.35, 1)
+            Label:
+                size_hint: (1, 0.2)
+                id: lb_acionameto_selecionado
+                text: "Escolaha um tipo de Partida..."
+            GridLayout:
+                cols: 2
+                rows: 2
+                Label:
+                    text: "Aceleração [s]"
+                TextInput:
+                    id: input_aceleracao
+                    halign: 'center'
+                    input_filter: "int"
+                    multiline: False
+                Label:
+                    text: "Desaceleração [s]"
+                TextInput:
+                    id: input_desaceleracao
+                    halign: 'center'
+                    input_filter: "int"
+                    multiline: False
+            FloatLayout:
+
+                
