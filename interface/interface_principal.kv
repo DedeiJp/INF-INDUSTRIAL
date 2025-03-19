@@ -229,7 +229,28 @@
                 on_release:
                     root._graphcarg.open()
 
+
+
+
             
+            Label:
+                text: "1.0 N*m"
+                pos_hint: {"center_x": 0.15, "center_y": 0.94}
+                color: (0,0,0,1)
+            Label:
+                id: lb_torque_mot
+                text: "0.0 N*m"
+                pos_hint: {"center_x": 0.16, "center_y": 0.75}
+                color: (0,0,0,1)
+            Label:
+                text: "0.0 N*m"
+                pos_hint: {"center_x": 0.15, "center_y": 0.56}
+                color: (0,0,0,1)
+
+
+
+                
+
             Bar:
                 id: bar_torque
                 value: 0
@@ -238,6 +259,29 @@
                 pos_hint: {"x": 0.080, "y": 0.550}
                 color: (82/255, 96/255, 122/255, 255/255)
                 background_color: (175/255,184/255,199/255,255/255)
+
+
+
+
+
+
+            Label:
+                text: "2000 RMP"
+                pos_hint: {"center_x": 0.32, "center_y": 0.94}
+                color: (0,0,0,1)
+            Label:
+            Label:
+                id: lb_rot_motor
+                text: "0 RPM"
+                pos_hint: {"center_x": 0.34, "center_y": 0.75}
+                color: (0,0,0,1)
+            Label:
+                text: "0 RPM"
+                pos_hint: {"center_x": 0.32, "center_y": 0.56}
+                color: (0,0,0,1)
+
+
+
             
             Bar:
                 id: bar_rpm

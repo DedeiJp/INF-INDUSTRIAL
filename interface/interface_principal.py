@@ -340,10 +340,12 @@ class MyWidget(BoxLayout):
                     case "rot_motor":
                         rpm = float(self.__modbusDataTable["rot_motor"]["valor"])
                         self.ids.bar_rpm.value = (rpm / 2000) * 100
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
                         continue
                     case "torque_mot":
                         torque = float(self.__modbusDataTable["torque_mot"]["valor"])
                         self.ids.bar_torque.value = (torque / 1) * 100
+                        info_dado["widget"].ids[f"lb_{nome_dado}"].text = str(info_dado["valor"]) + " " + info_dado["unidade"]
                         continue
                     case "carga_est":
                         carga = float(self.__modbusDataTable["carga_est"]["valor"])
