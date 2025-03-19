@@ -16,16 +16,19 @@
             TextInput:
                 id: input_ip
                 halign: 'center'
+                text: "10.15.30.184"
             Label:
                 text: "Porta Esteira"
             TextInput:
                 id: input_porta
                 halign: 'center'
+                text: "502"
             Label:
                 text: "Scan Time [ms]"
             TextInput:
                 id: input_scantime
                 halign: 'center'
+                text: "1000"
         BoxLayout:
             size_hint:(1, 0.35)
             orientation: 'horizontal'
@@ -269,7 +272,7 @@
             Button:
                 id: bt_motor_start
                 text: "Ligar Motor"
-                on_release: app.root.start_motor()
+                on_release: app.root.start_motor(int(input_aceleracao.text), int(input_desaceleracao.text), int(10*slider_freq.value))
             Button:
                 id: bt_motor_stop
                 text: "Desligar Motor"
@@ -287,7 +290,7 @@
             Button:
                 id: bt_partida_direta
                 text: "TESYS DIRETA"
-                on_release: app.root.set_tipo_partida(0)
+                on_release: app.root.set_tipo_partida(3)
             Button:
                 id: bt_partida_inversor
                 text: "ATV31 INVERSOR"

@@ -329,7 +329,7 @@ class MyWidget(BoxLayout):
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = tipo_motor
                         continue
                     case "driver_partida":
-                        driver_partida = "DIRETA" if int(info_dado["valor"]) == 0 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
+                        driver_partida = "DIRETA" if int(info_dado["valor"]) == 3 else "SOFT-START" if int(info_dado["valor"]) == 1 else "INVERSOR" if int(info_dado["valor"]) == 2 else None
                         info_dado["widget"].ids[f"lb_{nome_dado}"].text = driver_partida
                         continue
                     case "vel_est":
@@ -365,7 +365,7 @@ class MyWidget(BoxLayout):
         """
         Escreve nos registradores modbus adequados para que seja definido o tipo de partida do motor
         """
-        if tipo_partida >= 0 and tipo_partida <= 2:
+        if tipo_partida >= 1 and tipo_partida <= 3:
             with self._lock:
                 self.__modbusDataTable["ctrl_driver_partida"]["valor"] = tipo_partida
 
@@ -395,7 +395,7 @@ class MyWidget(BoxLayout):
             driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
 
         match driver_partida:
-            case 0:
+            case 3:
                 self._modbusClient.escreveDado(\
                     addr.HOLDING_REGISTER,\
                     self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
@@ -464,12 +464,12 @@ class MyWidget(BoxLayout):
             acc = 10
             desacc = 10
             freq = 0
-        elif acc > 60 or desacc > 60 or freq > 60:
+        elif acc > 60 or desacc > 60 or freq > 600:
             acc = 60
             desacc = 60
-            freq = 60
+            freq = 600
 
-        self._motor_actuator_register_write_thread = Thread(target=self._start_motor, args=(acc, desacc, freq,))
+        self._motor_actuator_register_write_thread = Thread(target=self._start_motor, args=(acc, desacc, freq,)) # virgula alterada
 
         self._motor_actuator_register_write_thread.start()
 
@@ -481,7 +481,7 @@ class MyWidget(BoxLayout):
             driver_partida = self.__modbusDataTable["driver_partida"]["valor"]
 
         match driver_partida:
-            case 0:
+            case 3:
                 self._modbusClient.escreveDado(\
                     addr.HOLDING_REGISTER,\
                     self.__modbusDataTable["ctrl_partida_dir"]["addr"],\
