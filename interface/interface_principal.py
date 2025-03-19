@@ -9,7 +9,7 @@ from time import sleep
 from threading import Thread, Lock
 import sys
 from kivy.garden import bar
-from interface.interface_popup import HistGraphPopup, DataGraphPopupRPM, DataGraphPopupVEL, DataGraphPopupTOR
+from interface.interface_popup import HistGraphPopup, DataGraphPopupRPM, DataGraphPopupVEL, DataGraphPopupTOR, DataGraphPopupCARG
 from timeseriesgraph import TimeSeriesGraph
 import random
 from db.bdhandler import BDHandler
@@ -135,6 +135,7 @@ class MyWidget(BoxLayout):
         self._graphrpm = DataGraphPopupRPM(self._max_points,self._tags["rot_motor"]["color"])        
         self._graphvel = DataGraphPopupVEL(self._max_points,self._tags["vel_est"]["color"])
         self._graphtor = DataGraphPopupTOR(self._max_points,self._tags["torque_mot"]["color"])
+        self._graphcarg = DataGraphPopupCARG(self._max_points,self._tags["carga_est"]["color"])
         # Inicializa o BDHandler com as tags filtradas
         
         self._filtered_tags = {
@@ -358,6 +359,7 @@ class MyWidget(BoxLayout):
             self._graphrpm.ids.graphrpm.updateGraph((timestamp, self.__modbusDataTable["rot_motor"]["valor"]), 0)
             self._graphvel.ids.graphvel.updateGraph((timestamp, self.__modbusDataTable["vel_est"]["valor"]), 0)
             self._graphtor.ids.graphtor.updateGraph((timestamp, self.__modbusDataTable["torque_mot"]["valor"]), 0)
+            self._graphcarg.ids.graphcarg.updateGraph((timestamp, self.__modbusDataTable["carga_est"]["valor"]), 0)
         except Exception as e:
             print(f"Erro ao atualizar gráfico: {e}")
 
@@ -619,6 +621,7 @@ class MyWidget(BoxLayout):
         self.ids.bt_velocidade.disabled = False
         self.ids.bt_pid.disabled = False
         self.ids.bt_acionamento.disabled = False
+        self.ids.bt_peso.disabled = False
 
     @mainthread
     def _disable_buttons(self):
@@ -631,6 +634,7 @@ class MyWidget(BoxLayout):
         self.ids.bt_velocidade.disabled = True
         self.ids.bt_pid.disabled = True
         self.ids.bt_acionamento.disabled = True
+        self.ids.bt_peso.disabled = True
 
     @mainthread
     def __handle_client_connected(self):

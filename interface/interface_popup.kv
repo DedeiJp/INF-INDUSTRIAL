@@ -644,3 +644,60 @@
     Label:
         id: label
         
+<DataGraphPopupCARG>:
+    title: "Gráfico em tempo real da carga na esteira"
+    BoxLayout:
+        orientation: 'vertical'
+        TimeSeriesGraph:
+            id: graphcarg
+            xlabel: 'Horário'
+            ylabel: 'kgf/cm²'
+            background_color: 0.5,0.5,0.5,0.5
+            x_ticks_minor: 1
+            x_ticks_major: 5
+            y_ticks_major: 10
+            y_grid_label: True
+            x_grid_label: True
+            padding: 5
+            x_grid: True
+            y_grid: True
+            xmin:0
+            ymin:0
+            ymax:200
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1,0.05)
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: (0.5,1)
+                Label:
+                    size_hint: (0.3,1)
+                    text: "Número de pontos do gráfico"
+                LabeledCheckBoxGraphCARG:
+                    id: 4mp20
+                    on_kv_post:
+                        self.ids.label.text = '20'
+                        self.ids.checkbox.group = 'cb4_group'
+                LabeledCheckBoxGraphCARG:
+                    id: 4mp50
+                    on_kv_post:
+                        self.ids.label.text = '50'
+                        self.ids.checkbox.group = 'cb4_group'
+                LabeledCheckBoxGraphCARG:
+                    id: 4mp100
+                    on_kv_post:
+                        self.ids.label.text = '100'
+                        self.ids.checkbox.group = 'cb4_group'
+            Button:
+                text: "Fechar"
+                size_hint: (0.2,1)
+                on_release: root.dismiss()
+
+<LabeledCheckBoxGraphCARG>:
+    orientation: 'horizontal'
+    size_hint: (0.1,1)
+    CheckBox:
+        id: checkbox
+        on_active: app.root._graphcarg.ids.graphcarg.setMaxPoints(int(label.text),0) if app.root is not None else None
+    Label:
+        id: label

@@ -136,3 +136,13 @@ class DataGraphPopupTOR(Popup):
 class LabeledCheckBoxGraphTOR(BoxLayout):
     pass
 
+class DataGraphPopupCARG(Popup):
+    def __init__(self,xmax,plot_color,**kwargs):
+        super().__init__(**kwargs)
+        self.plot = LinePlot(line_width=1.5,color=plot_color)
+        self.ids.graphcarg.add_plot(self.plot)
+        self.ids.graphcarg.xmax = xmax
+
+class LabeledCheckBoxGraphCARG(BoxLayout):
+    pass
+
