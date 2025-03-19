@@ -265,7 +265,7 @@
         GridLayout:
             size_hint: (0.35, 1)
             cols: 1
-            rows: 2
+            rows: 3
             Button:
                 id: bt_motor_start
                 text: "Ligar Motor"
@@ -274,6 +274,10 @@
                 id: bt_motor_stop
                 text: "Desligar Motor"
                 on_release: app.root.stop_motor()
+            Button:
+                id: bt_motor_reset
+                text: "Reseta Motor"
+                on_release: app.root.reset_motor()
         GridLayout:
             size_hint: (0.35, 1)
             cols: 1
@@ -319,11 +323,68 @@
             BoxLayout:
                 size_hint: (1, 0.6)
                 orientation: 'vertical'
-                Label:
-                    text: str(slider_freq.value)
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: ("Frequencia [HZ]:")
+                    Label:
+                        text: str(slider_freq.value)
                 Slider:
                     id: slider_freq
                     min: 0
                     max: 60
                     step: 1
                     orientation: 'horizontal'
+
+
+<ModalPID>
+    title: "Controle de PID"
+    size_hint_x: 0.6
+    size_hint_y: 0.3
+    height: 600
+    BoxLayout:
+        orientation: 'horizontal'
+        GridLayout:
+            size_hint: (0.35, 1)
+            cols: 4
+            rows: 3
+            Label:
+                text: "PID Automatico?"
+            CheckBox:
+                id: input_pid_automatico
+                active: True
+            Label:
+                text: "P"
+            TextInput:
+                id: input_pid_p
+                halign: 'center'
+                input_filter: "int"
+                multiline: False
+            Label:
+                text: "Set Point PID (SP)"
+            TextInput:
+                id: input_pid_sp
+                halign: 'center'
+                input_filter: "int"
+                multiline: False
+            Label:
+                text: "I"
+            TextInput:
+                id: input_pid_i
+                halign: 'center'
+                input_filter: "int"
+                multiline: False
+            Label:
+                text: "Variável Manipulada (MV)"
+            TextInput:
+                id: input_pid_mv
+                halign: 'center'
+                input_filter: "int"
+                multiline: False
+            Label:
+                text: "D"
+            TextInput:
+                id: input_pid_d
+                halign: 'center'
+                input_filter: "int"
+                multiline: False

@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.config import Config
-from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente, ModalTemperatura, ModalPotencia, ModalAcionamento
+from interface.interface_popup import ModbusConfig, ModalTensao, ModalCorrente, ModalTemperatura, ModalPotencia, ModalAcionamento, ModalPID
 from os import path
 from time import sleep
 from threading import Thread, Lock
@@ -57,6 +57,7 @@ class MyWidget(BoxLayout):
         self._potenciaModal = ModalPotencia()
         self._temperaturaModal = ModalTemperatura()
         self._acionamentoModal = ModalAcionamento()
+        self._pidModal = ModalPID()
 
         self.__modbusDataTable: dict[dict[str, str|int]] = {
             "tipo_motor": { "addr": 708, "float": False, "multiplicador": 1, "valor": None, "unidade": "", "widget": self},
