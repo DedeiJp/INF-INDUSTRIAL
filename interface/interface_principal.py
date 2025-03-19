@@ -10,7 +10,7 @@ from threading import Thread, Lock
 import sys
 from kivy.garden import bar
 from interface.interface_popup import HistGraphPopup, DataGraphPopupRPM, DataGraphPopupVEL, DataGraphPopupTOR, DataGraphPopupCARG
-from timeseriesgraph import TimeSeriesGraph
+from interface.timeseriesgraph import TimeSeriesGraph
 import random
 from db.bdhandler import BDHandler
 from datetime import datetime

@@ -20,7 +20,7 @@ class BDHandler:
     """
     Classe para manipulação do banco de dados usando SQLAlchemy.
     """
-    def __init__(self, dbpath, tags, tablename='dataTable'):
+    def __init__(self, dbpath, tags, tablename='supervisorio'):
         """
         Construtor.
         """

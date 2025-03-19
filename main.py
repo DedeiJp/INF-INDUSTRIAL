@@ -13,7 +13,7 @@ class App_main(MDApp):
         """
         Método de construção da janela com os parametros. 
         """
-        db_path = "teste1.db"
+        db_path = "database.db"
         self._widget = ui_p.MyWidget(db_path=db_path)
         return self._widget
     
